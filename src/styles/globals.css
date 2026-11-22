@@ -1,0 +1,244 @@
+/* Ink & Antique gold — design tokens for Tailwind v4 + shadcn/ui.
+   Source of truth: docs/design-system/tokens.json. Change values there first, then here. */
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..700,0..100,0..1&family=Anek+Latin:wght@300..700&display=swap');
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css'; /* shadcn custom variants (data-open etc.) used by generated components */
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* surfaces */
+  --background: #faf8f4; /* surface */
+  --card: #ffffff; /* surface-raised */
+  --popover: #ffffff;
+  --muted: #f2ede3; /* surface-sunken */
+  --sidebar: #f2ede3;
+  /* text */
+  --foreground: #17140f; /* ink */
+  --card-foreground: #17140f;
+  --popover-foreground: #17140f;
+  --muted-foreground: #625a4e; /* ink-muted */
+  --subtle-foreground: #8a8070; /* ink-subtle: icons, placeholders only */
+  --sidebar-foreground: #17140f;
+  /* actions */
+  --primary: #17140f;
+  --primary-hover: #2e2820;
+  --primary-foreground: #faf8f4;
+  --secondary: #f5eddc; /* gold-soft */
+  --secondary-foreground: #17140f;
+  --accent: #f2ede3; /* hover fill */
+  --accent-foreground: #17140f;
+  /* signature */
+  --gold: #7a5c22;
+  --gold-soft: #f5eddc;
+  /* status */
+  --success: #1b6670;
+  --success-soft: #e3f1f2;
+  --warning: #a3470f;
+  --warning-soft: #fceadb;
+  --danger: #a8233a;
+  --danger-soft: #fbe5e9;
+  --destructive: #a8233a;
+  /* lines */
+  --border: #e7e0d2;
+  --input: #8c8272; /* border-control */
+  --ring: #7a5c22; /* focus-ring */
+  --sidebar-border: #e7e0d2;
+  --sidebar-primary: #17140f;
+  --sidebar-primary-foreground: #faf8f4;
+  --sidebar-accent: #f5eddc;
+  --sidebar-accent-foreground: #17140f;
+  --sidebar-ring: #7a5c22;
+  /* shape & depth */
+  --radius: 10px;
+  --shadow-overlay: 0 16px 40px -12px rgba(23, 20, 15, 0.22), 0 2px 6px rgba(23, 20, 15, 0.06);
+  --shadow-sticky: 0 1px 0 rgba(23, 20, 15, 0.08);
+}
+
+.dark {
+  --background: #12100c;
+  --card: #1b1814;
+  --popover: #1b1814;
+  --muted: #0c0a08;
+  --sidebar: #0c0a08;
+  --foreground: #f3ecdd;
+  --card-foreground: #f3ecdd;
+  --popover-foreground: #f3ecdd;
+  --muted-foreground: #ada393;
+  --subtle-foreground: #8a8070;
+  --sidebar-foreground: #f3ecdd;
+  --primary: #f3ecdd;
+  --primary-hover: #ffffff;
+  --primary-foreground: #17140f;
+  --secondary: #2a2317;
+  --secondary-foreground: #f3ecdd;
+  --accent: #0c0a08;
+  --accent-foreground: #f3ecdd;
+  --gold: #d4b26a;
+  --gold-soft: #2a2317;
+  --success: #7cc7ce;
+  --success-soft: #12292b;
+  --warning: #f0a46b;
+  --warning-soft: #33200f;
+  --danger: #f2899b;
+  --danger-soft: #34141b;
+  --destructive: #f2899b;
+  --border: #2c261e;
+  --input: #7a7062;
+  --ring: #d4b26a;
+  --sidebar-border: #2c261e;
+  --sidebar-primary: #f3ecdd;
+  --sidebar-primary-foreground: #17140f;
+  --sidebar-accent: #2a2317;
+  --sidebar-accent-foreground: #f3ecdd;
+  --sidebar-ring: #d4b26a;
+  --shadow-overlay: 0 16px 40px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(243, 236, 221, 0.05);
+  --shadow-sticky: 0 1px 0 rgba(243, 236, 221, 0.07);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-subtle-foreground: var(--subtle-foreground);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-gold: var(--gold);
+  --color-gold-soft: var(--gold-soft);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --font-sans: 'Anek Latin', 'Anek Tamil', system-ui, sans-serif;
+  --font-display: 'Fraunces', 'Noto Serif Tamil', Georgia, serif;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+
+  --shadow-overlay: var(--shadow-overlay);
+  --shadow-sticky: var(--shadow-sticky);
+
+  --ease-enter: cubic-bezier(0.2, 0, 0, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring;
+  }
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-background font-sans text-[15px] leading-[22px] text-foreground antialiased;
+  }
+  .font-display {
+    font-variation-settings:
+      'SOFT' 30,
+      'WONK' 0;
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* Type styles from the design system */
+@utility text-display {
+  font-family: var(--font-display);
+  font-size: 44px;
+  line-height: 48px;
+  font-weight: 380;
+  letter-spacing: -0.02em;
+}
+@utility text-headline {
+  font-family: var(--font-display);
+  font-size: 30px;
+  line-height: 36px;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+}
+@utility text-title-serif {
+  font-family: var(--font-display);
+  font-size: 22px;
+  line-height: 28px;
+  font-weight: 450;
+  letter-spacing: -0.01em;
+}
+@utility text-heading {
+  font-size: 17px;
+  line-height: 24px;
+  font-weight: 600;
+}
+@utility text-body {
+  font-size: 15px;
+  line-height: 22px;
+}
+@utility text-body-touch {
+  font-size: 16px;
+  line-height: 24px;
+}
+@utility text-label {
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 500;
+}
+@utility text-caption {
+  font-size: 12px;
+  line-height: 16px;
+}
+@utility text-overline {
+  font-size: 11px;
+  line-height: 16px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+@utility text-figure {
+  font-size: 15px;
+  line-height: 22px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+@utility text-figure-lg {
+  font-size: 28px;
+  line-height: 32px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums lining-nums;
+}
