@@ -30,3 +30,22 @@ export function formatDate(date: Date, timeZone = 'Asia/Kolkata'): string {
     timeZone,
   }).format(date);
 }
+
+/** "2 Feb, 6:10 pm": date as formatDate, then 12-hour time (company default, §17). */
+export function formatDateTime(date: Date, timeZone = 'Asia/Kolkata'): string {
+  const time = new Intl.DateTimeFormat('en-IN', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+    timeZone,
+  }).format(date);
+  return `${formatDate(date, timeZone)}, ${time}`;
+}
+
+/** Monogram letters: "Shubh Aarambh Events" → "SA"; "Utsav" → "UT". */
+export function initials(name: string): string {
+  const [first = '', second] = name.trim().split(/\s+/);
+  const letters =
+    second === undefined ? first.slice(0, 2) : `${first.charAt(0)}${second.charAt(0)}`;
+  return letters.toUpperCase();
+}
