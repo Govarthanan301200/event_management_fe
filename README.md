@@ -11,7 +11,7 @@ npx playwright install chromium   # once, for e2e tests
 npm run dev                   # http://localhost:5173
 ```
 
-The home page calls `GET {VITE_API_URL}/api/messages` and lists the rows returned from Supabase.
+The home page calls `GET {VITE_API_URL}/health/ready` and shows whether the backend and its database are reachable.
 
 ## Scripts
 
