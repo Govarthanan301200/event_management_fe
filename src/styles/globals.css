@@ -242,3 +242,8 @@
   letter-spacing: -0.01em;
   font-variant-numeric: tabular-nums lining-nums;
 }
+
+/* Sticky footers (S1 "Send to planner") must never cover the focused field (design system: Accessibility). */
+html:has([data-sticky-footer]) {
+  scroll-padding-bottom: 10rem;
+}
