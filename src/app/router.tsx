@@ -3,6 +3,12 @@ import { RequireAuth, SignInPage } from '@/features/auth';
 import { CataloguePage, FunctionTypesPage } from '@/features/catalogue';
 import { ClientFormPage } from '@/features/client-form';
 import { EventOverviewPage, EventsPage } from '@/features/events';
+import {
+  EditVendorPage,
+  NewVendorPage,
+  VendorDirectoryPage,
+  VendorProfilePage,
+} from '@/features/vendors';
 import { NotFoundPage } from './not-found-page';
 import { PlannerLayout } from './planner-layout';
 import { SettingsLayout } from './settings-layout';
@@ -20,6 +26,11 @@ export const routes = [
           { index: true, element: <Navigate to="/events" replace /> },
           { path: '/events', element: <EventsPage /> },
           { path: '/events/:eventId', element: <EventOverviewPage /> },
+          // Spec §9: S3 directory and S4 profile / edit.
+          { path: '/vendors', element: <VendorDirectoryPage /> },
+          { path: '/vendors/new', element: <NewVendorPage /> },
+          { path: '/vendors/:vendorId', element: <VendorProfilePage /> },
+          { path: '/vendors/:vendorId/edit', element: <EditVendorPage /> },
           {
             path: '/settings',
             element: <SettingsLayout />,

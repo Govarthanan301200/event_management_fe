@@ -147,6 +147,10 @@
 
   --ease-enter: cubic-bezier(0.2, 0, 0, 1);
   --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+
+  /* Layout sizes from tokens.json: w-sidebar, max-w-content. */
+  --spacing-sidebar: 248px;
+  --container-content: 1280px;
 }
 
 @layer base {

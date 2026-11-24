@@ -2,7 +2,7 @@ import { cn } from '@/lib/utils';
 import type { FunctionType } from '../api/catalogue.schema';
 import { useSortableRow } from '../hooks/use-sortable-row';
 import { DragHandle } from './drag-handle';
-import { RowMenu, type RowMenuItem } from './row-menu';
+import { RowMenu, type RowMenuItem } from '@/components/shared/row-menu';
 
 type FunctionTypeRowProps = { functionType: FunctionType; actions: RowMenuItem[] };
 
