@@ -26,7 +26,7 @@ export class ApiError extends Error {
 }
 
 type RequestOptions = {
-  method?: 'GET' | 'POST' | 'PATCH' | 'DELETE';
+  method?: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
   body?: unknown;
   /** Supabase access token for planner routes; omitted on public routes. */
   token?: string;
@@ -49,7 +49,8 @@ export async function apiRequest<T extends z.ZodType>(
     ...(options.body === undefined ? {} : { body: JSON.stringify(options.body) }),
   });
 
-  const json: unknown = await res.json().catch(() => undefined);
+  // 204 No Content (reorders): there is no body; callers pass `z.undefined()`.
+  const json: unknown = res.status === 204 ? undefined : await res.json().catch(() => undefined);
   if (!res.ok) {
     const parsed = errorBody.safeParse(json);
     if (parsed.success) {
@@ -59,6 +60,16 @@ export async function apiRequest<T extends z.ZodType>(
     throw new ApiError(res.status, `Request failed with status ${res.status}`);
   }
   return schema.parse(json);
+}
+
+/** The server's friendly message when there is one (409 duplicates, 422 rules), else `fallback`. */
+export function errorMessage(
+  error: unknown,
+  fallback = 'Something went wrong. Try again.',
+): string {
+  return error instanceof ApiError && error.status < 500 && error.message
+    ? error.message
+    : fallback;
 }
 
 /** GET a JSON endpoint and validate the body with Zod at the boundary. */
