@@ -12,7 +12,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { errorMessage } from '@/lib/api-client';
 import { useResetCatalogue } from '../hooks/use-catalogue';
-import { RowMenu } from './row-menu';
+import { RowMenu } from '@/components/shared/row-menu';
 
 type ResetCatalogueMenuProps = { canReset: boolean };
 
@@ -33,7 +33,7 @@ export function ResetCatalogueMenu({ canReset }: ResetCatalogueMenuProps) {
             label: 'Reset to template',
             tone: 'danger',
             disabled: !canReset,
-            hint: canReset ? undefined : 'Only before your first event',
+            hint: canReset ? undefined : 'Only before your first event or vendor',
             onSelect: () => {
               setConfirming(true);
             },

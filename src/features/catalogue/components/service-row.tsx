@@ -8,7 +8,7 @@ import { useUpdateService } from '../hooks/use-catalogue';
 import { useSortableRow } from '../hooks/use-sortable-row';
 import { parameterList } from '../lib/parameters';
 import { DragHandle } from './drag-handle';
-import { RowMenu, type RowMenuItem } from './row-menu';
+import { RowMenu, type RowMenuItem } from '@/components/shared/row-menu';
 
 type ServiceRowProps = {
   service: Service;

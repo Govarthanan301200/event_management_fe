@@ -8,7 +8,7 @@ import {
   useReorderFunctionTypes,
   useUpdateFunctionType,
 } from '../hooks/use-function-types';
-import { archiveWithUndo } from '../lib/archive-with-undo';
+import { archiveWithUndo } from '@/lib/archive-with-undo';
 import { moveBy, moveTo, withArchivedLast } from '../lib/order';
 import { ArchivedSection } from './archived-section';
 import { FunctionTypeRow } from './function-type-row';

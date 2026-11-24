@@ -4,12 +4,12 @@ import { Button } from '@/components/ui/button';
 import { errorMessage } from '@/lib/api-client';
 import type { CatalogueCategory } from '../api/catalogue.schema';
 import { useReorderCategories, useUpdateCategory } from '../hooks/use-catalogue';
-import { archiveWithUndo } from '../lib/archive-with-undo';
+import { archiveWithUndo } from '@/lib/archive-with-undo';
 import { moveBy, withArchivedLast } from '../lib/order';
 import type { ServiceDialogMode } from '../lib/service-form';
 import { CategorySettings } from './category-settings';
 import { NameDialog } from './name-dialog';
-import { RowMenu } from './row-menu';
+import { RowMenu } from '@/components/shared/row-menu';
 import { ServiceDialog } from './service-dialog';
 import { ServiceTable } from './service-table';
 

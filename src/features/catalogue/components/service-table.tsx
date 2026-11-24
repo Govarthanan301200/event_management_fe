@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import type { CatalogueCategory, Service } from '../api/catalogue.schema';
 import { useReorderServices, useUpdateService } from '../hooks/use-catalogue';
-import { archiveWithUndo } from '../lib/archive-with-undo';
+import { archiveWithUndo } from '@/lib/archive-with-undo';
 import { moveBy, moveTo, withArchivedLast } from '../lib/order';
 import { ArchivedSection } from './archived-section';
 import { ServiceRow } from './service-row';

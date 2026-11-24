@@ -209,7 +209,7 @@ describe('S2 service catalogue', () => {
     await user.click(await screen.findByRole('button', { name: 'Catalogue options' }));
     const item = await screen.findByRole('menuitem', { name: /reset to template/i });
     expect(item).toHaveAttribute('aria-disabled', 'true');
-    expect(item).toHaveTextContent('Only before your first event');
+    expect(item).toHaveTextContent('Only before your first event or vendor');
   });
 
   it('resets the catalogue after confirming', async () => {
