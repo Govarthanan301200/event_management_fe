@@ -41,7 +41,15 @@ export function VendorProfilePage() {
   }
 
   const vendor = query.data;
-  const subtitle = [vendor.categories.map((category) => category.name).join(', '), vendor.city]
+  const used =
+    vendor.usedInEvents > 0
+      ? `Used in ${vendor.usedInEvents} ${vendor.usedInEvents === 1 ? 'event' : 'events'}`
+      : null;
+  const subtitle = [
+    vendor.categories.map((category) => category.name).join(', '),
+    vendor.city,
+    used,
+  ]
     .filter(Boolean)
     .join(' · ');
 

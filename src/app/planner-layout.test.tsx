@@ -19,14 +19,14 @@ function renderAt(path: string) {
 }
 
 describe('planner sidebar (spec §3, decision 2026-11-24)', () => {
-  it('lists Events, Vendors and Settings, and marks the current section', () => {
+  it('lists Events, Vendors and Services, and marks the current section', () => {
     renderAt('/vendors/v-1');
     const nav = screen.getByRole('navigation', { name: 'Main' });
     expect(
       within(nav)
         .getAllByRole('link')
         .map((link) => link.textContent),
-    ).toEqual(['Events', 'Vendors', 'Settings']);
+    ).toEqual(['Events', 'Vendors', 'Services']);
     expect(within(nav).getByRole('link', { name: 'Vendors' })).toHaveAttribute(
       'aria-current',
       'page',

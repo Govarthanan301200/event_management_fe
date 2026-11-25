@@ -9,11 +9,11 @@ import {
   useUpdateFunctionType,
 } from '../hooks/use-function-types';
 import { archiveWithUndo } from '@/lib/archive-with-undo';
-import { moveBy, moveTo, withArchivedLast } from '../lib/order';
+import { moveBy, moveTo, withArchivedLast } from '@/lib/order';
 import { ArchivedSection } from './archived-section';
 import { FunctionTypeRow } from './function-type-row';
 import { NameDialog } from './name-dialog';
-import { SortableList } from './sortable-list';
+import { SortableList } from '@/components/shared/sortable-list';
 
 type DialogState = { kind: 'add' } | { kind: 'rename'; type: FunctionType } | null;
 

@@ -1,5 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { CalendarDays, LogOut, Settings, Store, type LucideIcon } from 'lucide-react';
+import { CalendarDays, List, LogOut, Store, type LucideIcon } from 'lucide-react';
 import { NavLink, Outlet, useNavigate } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { signOut } from '@/features/auth';
@@ -14,7 +14,7 @@ type Section = { to: string; label: string; icon: LucideIcon };
 const mainSections: Section[] = [
   { to: '/events', label: 'Events', icon: CalendarDays },
   { to: '/vendors', label: 'Vendors', icon: Store },
-  { to: '/settings', label: 'Settings', icon: Settings },
+  { to: '/settings', label: 'Services', icon: List },
 ];
 
 /**

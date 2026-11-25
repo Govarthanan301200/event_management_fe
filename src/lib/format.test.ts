@@ -1,5 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import { formatDateTime, formatINR, formatINRCompact, initials } from './format';
+import {
+  formatClock,
+  formatDateRange,
+  formatDateTime,
+  formatDay,
+  formatINR,
+  formatINRCompact,
+  formatTimeRange,
+  initials,
+  parseRupees,
+} from './format';
 
 describe('formatINR', () => {
   it('uses en-IN grouping', () => {
@@ -35,5 +45,40 @@ describe('initials', () => {
     expect(initials('Shubh Aarambh Events')).toBe('SA');
     expect(initials('utsav')).toBe('UT');
     expect(initials('  ')).toBe('');
+  });
+});
+
+describe('function dates and times', () => {
+  const thisYear = new Date().getFullYear();
+
+  it('formats a calendar date without shifting it across time zones', () => {
+    expect(formatDay('2099-02-12')).toBe('12 Feb 2099');
+    expect(formatDay(`${thisYear}-02-12`)).toBe('12 Feb');
+  });
+
+  it('formats date ranges compactly', () => {
+    expect(formatDateRange('2099-02-12', '2099-02-12')).toBe('12 Feb 2099');
+    expect(formatDateRange('2099-02-12', '2099-02-14')).toBe('12–14 Feb 2099');
+    expect(formatDateRange('2099-02-28', '2099-03-02')).toBe('28 Feb – 2 Mar 2099');
+    expect(formatDateRange('2098-12-30', '2099-01-02')).toBe('30 Dec 2098 – 2 Jan 2099');
+    expect(formatDateRange(`${thisYear}-02-12`, `${thisYear}-02-14`)).toBe('12–14 Feb');
+  });
+
+  it('shows 12-hour times', () => {
+    expect(formatClock('00:05')).toBe('12:05 AM');
+    expect(formatClock('06:00')).toBe('6:00 AM');
+    expect(formatClock('12:00')).toBe('12:00 PM');
+    expect(formatClock('18:30')).toBe('6:30 PM');
+  });
+
+  it('marks functions that run past midnight', () => {
+    expect(formatTimeRange('11:00', '15:00')).toBe('11:00 AM – 3:00 PM');
+    expect(formatTimeRange('18:30', '01:00')).toBe('6:30 PM – 1:00 AM +1');
+    expect(formatTimeRange('18:30', null)).toBe('6:30 PM');
+  });
+
+  it('parses rupees typed with Indian grouping', () => {
+    expect(parseRupees('25,00,000')).toBe(2_500_000);
+    expect(parseRupees('  ')).toBeNull();
   });
 });

@@ -49,3 +49,74 @@ export function initials(name: string): string {
     second === undefined ? first.slice(0, 2) : `${first.charAt(0)}${second.charAt(0)}`;
   return letters.toUpperCase();
 }
+
+/** "8,000" or "25,00,000" → whole rupees; empty → null. Callers validate the shape first. */
+export function parseRupees(text: string): number | null {
+  const digits = text.replace(/,/g, '').trim();
+  return digits === '' ? null : Number(digits);
+}
+
+const dayMonth = new Intl.DateTimeFormat('en-IN', {
+  day: 'numeric',
+  month: 'short',
+  timeZone: 'UTC',
+});
+const dayMonthYear = new Intl.DateTimeFormat('en-IN', {
+  day: 'numeric',
+  month: 'short',
+  year: 'numeric',
+  timeZone: 'UTC',
+});
+
+/** A calendar date "YYYY-MM-DD" (company-local, no zone) as a UTC instant, for formatting only. */
+function calendarDate(isoDate: string): Date {
+  return new Date(`${isoDate}T00:00:00Z`);
+}
+
+function currentYear(timeZone: string): number {
+  return Number(new Intl.DateTimeFormat('en-IN', { year: 'numeric', timeZone }).format(new Date()));
+}
+
+/** Function dates: "12 Feb" in the current year, otherwise "12 Feb 2027". */
+export function formatDay(isoDate: string, timeZone = 'Asia/Kolkata'): string {
+  const date = calendarDate(isoDate);
+  return date.getUTCFullYear() === currentYear(timeZone)
+    ? dayMonth.format(date)
+    : dayMonthYear.format(date);
+}
+
+/**
+ * An event's span: "12 Feb 2027", "12–14 Feb 2027", "28 Feb – 2 Mar 2027" or
+ * "30 Dec 2026 – 2 Jan 2027". The year is dropped when both ends are in the current year.
+ */
+export function formatDateRange(first: string, last: string, timeZone = 'Asia/Kolkata'): string {
+  if (first === last) return formatDay(first, timeZone);
+  const [from, to] = [calendarDate(first), calendarDate(last)];
+  const sameYear = from.getUTCFullYear() === to.getUTCFullYear();
+  const year =
+    sameYear && from.getUTCFullYear() === currentYear(timeZone) ? '' : ` ${to.getUTCFullYear()}`;
+  if (!sameYear) return `${dayMonthYear.format(from)} – ${dayMonthYear.format(to)}`;
+  if (from.getUTCMonth() === to.getUTCMonth()) {
+    const month = new Intl.DateTimeFormat('en-IN', { month: 'short', timeZone: 'UTC' }).format(to);
+    return `${from.getUTCDate()}–${to.getUTCDate()} ${month}${year}`;
+  }
+  return `${dayMonth.format(from)} – ${dayMonth.format(to)}${year}`;
+}
+
+/** Wall-clock "18:30" → "6:30 PM" (12-hour company default, decision 2026-11-25). */
+export function formatClock(hhmm: string): string {
+  const [hours = 0, minutes = 0] = hhmm.split(':').map(Number);
+  const suffix = hours < 12 ? 'AM' : 'PM';
+  return `${hours % 12 || 12}:${String(minutes).padStart(2, '0')} ${suffix}`;
+}
+
+/** Whether an end time before the start means the function runs past midnight. */
+export function endsNextDay(start: string, end: string | null): boolean {
+  return end !== null && end < start;
+}
+
+/** "6:30 PM – 11:00 PM"; "6:30 PM – 1:00 AM +1" past midnight; "6:30 PM" with no end. */
+export function formatTimeRange(start: string, end: string | null): string {
+  if (end === null) return formatClock(start);
+  return `${formatClock(start)} – ${formatClock(end)}${endsNextDay(start, end) ? ' +1' : ''}`;
+}

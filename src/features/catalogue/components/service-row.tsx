@@ -5,9 +5,9 @@ import { errorMessage } from '@/lib/api-client';
 import { cn } from '@/lib/utils';
 import type { Service } from '../api/catalogue.schema';
 import { useUpdateService } from '../hooks/use-catalogue';
-import { useSortableRow } from '../hooks/use-sortable-row';
+import { useSortableRow } from '@/hooks/use-sortable-row';
 import { parameterList } from '../lib/parameters';
-import { DragHandle } from './drag-handle';
+import { DragHandle } from '@/components/shared/drag-handle';
 import { RowMenu, type RowMenuItem } from '@/components/shared/row-menu';
 
 type ServiceRowProps = {

@@ -16,7 +16,7 @@ import {
   type ServiceInput,
 } from '../api/catalogue.api';
 import type { Catalogue } from '../api/catalogue.schema';
-import { sortByIds } from '../lib/order';
+import { sortByIds } from '@/lib/order';
 
 export function useCatalogue() {
   return useQuery(catalogueOptions());

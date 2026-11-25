@@ -157,6 +157,7 @@ export function createVendorsServer(options: { empty?: boolean } = {}) {
       ...vendor,
       services,
       categories: [...categories].map(([id, name]) => ({ id, name })),
+      usedInEvents: 0,
       canDelete: true,
     };
   };

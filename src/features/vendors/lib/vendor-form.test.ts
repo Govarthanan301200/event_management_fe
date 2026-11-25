@@ -90,6 +90,7 @@ describe('form ↔ API', () => {
         },
       ],
       categories: [],
+      usedInEvents: 0,
       canDelete: true,
     };
     const values = toFormValues(vendor);

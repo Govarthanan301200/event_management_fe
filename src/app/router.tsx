@@ -2,7 +2,8 @@ import { createBrowserRouter, Navigate } from 'react-router';
 import { RequireAuth, SignInPage } from '@/features/auth';
 import { CataloguePage, FunctionTypesPage } from '@/features/catalogue';
 import { ClientFormPage } from '@/features/client-form';
-import { EventOverviewPage, EventsPage } from '@/features/events';
+import { EventOverviewPage, EventsPage, EventWorkspace } from '@/features/events';
+import { PlanPage } from '@/features/plan';
 import {
   EditVendorPage,
   NewVendorPage,
@@ -25,7 +26,15 @@ export const routes = [
         children: [
           { index: true, element: <Navigate to="/events" replace /> },
           { path: '/events', element: <EventsPage /> },
-          { path: '/events/:eventId', element: <EventOverviewPage /> },
+          {
+            // Spec §3 event workspace: Overview (S6) and Plan by category (S7) tabs.
+            path: '/events/:eventId',
+            element: <EventWorkspace />,
+            children: [
+              { index: true, element: <EventOverviewPage /> },
+              { path: 'plan', element: <PlanPage /> },
+            ],
+          },
           // Spec §9: S3 directory and S4 profile / edit.
           { path: '/vendors', element: <VendorDirectoryPage /> },
           { path: '/vendors/new', element: <NewVendorPage /> },

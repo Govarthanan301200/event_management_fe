@@ -13,8 +13,8 @@ const sections = [
 export function SettingsLayout() {
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-headline">Settings</h1>
-      <nav aria-label="Settings sections" className="flex gap-6 border-b border-border">
+      <h1 className="text-headline">Services</h1>
+      <nav aria-label="Services sections" className="flex gap-6 border-b border-border">
         {sections.map((section) => (
           <NavLink
             key={section.to}
