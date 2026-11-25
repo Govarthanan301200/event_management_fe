@@ -1,3 +1,4 @@
+import { parseRupees } from '@/lib/format';
 import type { VendorInput } from '../api/vendors.api';
 import type { VendorDetail, VendorForm, VendorServiceRow } from '../api/vendors.schema';
 import type { IndexedService } from './catalogue-index';
@@ -49,11 +50,8 @@ export function toFormValues(vendor: VendorDetail): VendorForm {
   };
 }
 
-/** "8,000" → 8000; empty → null. The form schema has already checked the shape. */
-export function parseRupees(text: string): number | null {
-  const digits = text.replace(/,/g, '').trim();
-  return digits === '' ? null : Number(digits);
-}
+// Re-exported for existing imports; the helper lives in lib/format.
+export { parseRupees };
 
 /** The request body. Empty optional text is sent as "" and stored as "none" by the server. */
 export function toVendorInput(values: VendorForm): VendorInput {

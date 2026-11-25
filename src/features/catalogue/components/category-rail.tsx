@@ -3,12 +3,12 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { cn } from '@/lib/utils';
 import type { Catalogue, CatalogueCategory } from '../api/catalogue.schema';
 import { useReorderCategories } from '../hooks/use-catalogue';
-import { useSortableRow } from '../hooks/use-sortable-row';
-import { moveTo, withArchivedLast } from '../lib/order';
+import { useSortableRow } from '@/hooks/use-sortable-row';
+import { moveTo, withArchivedLast } from '@/lib/order';
 import { AddCategoryDialog } from './add-category-dialog';
-import { DragHandle } from './drag-handle';
+import { DragHandle } from '@/components/shared/drag-handle';
 import { ResetCatalogueMenu } from './reset-catalogue-menu';
-import { SortableList } from './sortable-list';
+import { SortableList } from '@/components/shared/sortable-list';
 
 type CategoryRailProps = {
   catalogue: Catalogue;

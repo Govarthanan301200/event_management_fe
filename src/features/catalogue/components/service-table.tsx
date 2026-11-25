@@ -3,10 +3,10 @@ import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components
 import type { CatalogueCategory, Service } from '../api/catalogue.schema';
 import { useReorderServices, useUpdateService } from '../hooks/use-catalogue';
 import { archiveWithUndo } from '@/lib/archive-with-undo';
-import { moveBy, moveTo, withArchivedLast } from '../lib/order';
+import { moveBy, moveTo, withArchivedLast } from '@/lib/order';
 import { ArchivedSection } from './archived-section';
 import { ServiceRow } from './service-row';
-import { SortableList } from './sortable-list';
+import { SortableList } from '@/components/shared/sortable-list';
 
 type ServiceTableProps = {
   category: CatalogueCategory;

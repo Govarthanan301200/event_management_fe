@@ -9,7 +9,7 @@ import {
   updateFunctionType,
 } from '../api/catalogue.api';
 import type { FunctionType } from '../api/catalogue.schema';
-import { sortByIds } from '../lib/order';
+import { sortByIds } from '@/lib/order';
 
 export function useFunctionTypes() {
   return useQuery(functionTypesOptions());

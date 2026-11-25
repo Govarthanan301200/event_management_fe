@@ -1,5 +1,5 @@
 /**
- * Ordering helpers for the catalogue lists. The API needs every id in a scope (archived ones
+ * Ordering helpers for sortable lists (catalogue, function types, event functions). The API needs every id in a scope (archived ones
  * included); the UI only lets the planner arrange the active ones, so archived ids keep their
  * relative order at the end.
  */

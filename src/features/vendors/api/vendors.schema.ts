@@ -74,6 +74,8 @@ export const vendorDetailSchema = z.object({
   ),
   services: z.array(offeredServiceSchema),
   categories: z.array(z.object({ id: z.string(), name: z.string() })),
+  /** Distinct events using the vendor on a service line or function row. */
+  usedInEvents: z.number().int(),
   canDelete: z.boolean(),
 });
 export type VendorDetail = z.infer<typeof vendorDetailSchema>;

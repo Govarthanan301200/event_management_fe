@@ -1,10 +1,12 @@
+import { Link } from 'react-router';
+import { Button } from '@/components/ui/button';
 import type { EventDetail } from '../api/events.schema';
 
 type RequestedServicesPanelProps = { event: EventDetail };
 
 /**
- * S6 "Requested by client" (spec §7). SPEC-GAP: Planned / Not planned and "add to plan" need
- * service lines (milestone 5). Until then every request is truthfully Not planned.
+ * S6 "Requested by client" (spec §7, §10). Planned once the event has a line for the service;
+ * otherwise "Add to plan" opens the S8 drawer with the service chosen (spec §11 design ideas).
  */
 export function RequestedServicesPanel({ event }: RequestedServicesPanelProps) {
   const requests = event.requestedServices;
@@ -32,7 +34,21 @@ export function RequestedServicesPanel({ event }: RequestedServicesPanelProps) {
                   <q className="text-body text-muted-foreground">{request.clientNote}</q>
                 ) : null}
               </div>
-              <span className="shrink-0 text-label text-muted-foreground">○ Not planned</span>
+              {request.planned ? (
+                <span className="shrink-0 text-label text-success">✓ Planned</span>
+              ) : (
+                <span className="flex shrink-0 items-center gap-2">
+                  <span className="text-label text-muted-foreground">○ Not planned</span>
+                  <Button asChild variant="outline" size="sm">
+                    <Link
+                      to={`/events/${event.id}/plan?add=${request.serviceId}`}
+                      aria-label={`Add ${request.serviceName} to plan`}
+                    >
+                      Add to plan
+                    </Link>
+                  </Button>
+                </span>
+              )}
             </li>
           ))}
         </ul>
