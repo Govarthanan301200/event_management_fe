@@ -7,7 +7,7 @@ import { RequestedServicesPanel } from './requested-services-panel';
 
 /**
  * S6 event overview (spec §10): quick counts, functions, client details, form link and what the
- * client asked for. Open tasks join the quick counts with Module 7.
+ * client asked for.
  */
 export function EventOverviewPage() {
   const { event, editDetails } = useWorkspaceEvent();

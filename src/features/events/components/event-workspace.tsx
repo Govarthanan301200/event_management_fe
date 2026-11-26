@@ -10,10 +10,13 @@ import type { WorkspaceContext } from '../hooks/use-workspace-event';
 import { EditEventDialog } from './edit-event-dialog';
 import { EventHeader } from './event-header';
 
-// Spec §3 event tabs. By function, Summary and Tasks are added with Modules 6 and 7.
+// Spec §3 event tabs.
 const tabs = [
   { to: '', label: 'Overview', end: true },
   { to: 'plan', label: 'Plan by category', end: false },
+  { to: 'by-function', label: 'By function', end: false },
+  { to: 'summary', label: 'Summary', end: false },
+  { to: 'tasks', label: 'Tasks', end: false },
 ];
 
 /** The event workspace (design system: header, tabs, then the one gold hairline). */
@@ -62,7 +65,10 @@ export function EventWorkspace() {
     <div className="flex flex-col gap-8">
       <div className="flex flex-col gap-4">
         <EventHeader event={event} onEditDetails={context.editDetails} />
-        <nav aria-label="Event sections" className="flex gap-6 border-b border-gold">
+        <nav
+          aria-label="Event sections"
+          className="flex gap-6 overflow-x-auto border-b border-gold whitespace-nowrap"
+        >
           {tabs.map((tab) => (
             <NavLink
               key={tab.label}

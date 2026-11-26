@@ -9,13 +9,20 @@ import {
   type StatusChange,
 } from '../api/events.api';
 import type { EventDetail } from '../api/events.schema';
+import { summaryKeys } from '@/features/summary';
 
-/** Saves the returned event into the cache; lists re-sort on their next view. */
+/**
+ * Saves the returned event into the cache; lists re-sort on their next view. The overall budget
+ * feeds the summary's Left figure, so that refreshes too.
+ */
 function useStoreEvent() {
   const queryClient = useQueryClient();
   return async (event: EventDetail) => {
     queryClient.setQueryData(eventsKeys.detail(event.id), event);
-    await queryClient.invalidateQueries({ queryKey: eventsKeys.lists() });
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: eventsKeys.lists() }),
+      queryClient.invalidateQueries({ queryKey: summaryKeys.event(event.id) }),
+    ]);
   };
 }
 

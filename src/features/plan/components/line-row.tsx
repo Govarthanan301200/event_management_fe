@@ -3,16 +3,18 @@ import { useState } from 'react';
 import { RowMenu } from '@/components/shared/row-menu';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import type { EventFunction } from '@/features/events';
+import type { LineRollup } from '@/features/summary';
 import { formatINR } from '@/lib/format';
 import { cn } from '@/lib/utils';
 import type { ServiceLine } from '../api/plan.schema';
 import { summariseQuantities, type ParameterKey } from '../lib/quantities';
-import { isShared, lineTotal } from '../lib/rollup';
 import { LineRowsTable } from './line-rows-table';
 import { Tag } from './tag';
 
 type LineRowProps = {
   line: ServiceLine;
+  /** The line's total and attribution from the server (spec §12); absent while it refreshes. */
+  rollup: LineRollup | undefined;
   parameters: readonly ParameterKey[];
   paxPrefill: boolean;
   functions: readonly EventFunction[];
@@ -23,6 +25,7 @@ type LineRowProps = {
 /** One S7 service line: a one-line summary that expands to its function rows. */
 export function LineRow({
   line,
+  rollup,
   parameters,
   paxPrefill,
   functions,
@@ -30,7 +33,7 @@ export function LineRow({
   onRemove,
 }: LineRowProps) {
   const [open, setOpen] = useState(false);
-  const total = lineTotal(line);
+  const total = rollup?.total ?? 0;
   const hasBudget = line.lineBudget !== null || line.rows.some((row) => row.budget !== null);
   const covered = functions.filter((fn) => line.rows.some((row) => row.eventFunctionId === fn.id));
   const coverage =
@@ -69,7 +72,7 @@ export function LineRow({
               >
                 {line.serviceName}
               </button>
-              {isShared(line) ? <Tag>Shared</Tag> : null}
+              {rollup && rollup.shared > 0 ? <Tag>Shared</Tag> : null}
               {line.rows.length === 0 ? <Tag tone="warning">No functions</Tag> : null}
               {line.serviceArchived ? <Tag tone="warning">archived service</Tag> : null}
               {line.defaultVendor && !line.defaultVendor.offersService ? (

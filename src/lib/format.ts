@@ -9,6 +9,13 @@ export function formatINR(amount: number): string {
   return inr.format(amount);
 }
 
+const grouped = new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 });
+
+/** 12,00,000 — a full figure without the ₹, for tables captioned "Amounts in ₹". */
+export function formatGrouped(amount: number): string {
+  return grouped.format(amount);
+}
+
 /** ₹18.2L / ₹1.2Cr — compact form, only for dashboard rows and mobile cards. */
 export function formatINRCompact(amount: number): string {
   if (Math.abs(amount) >= 1_00_00_000) return `₹${trim(amount / 1_00_00_000)}Cr`;

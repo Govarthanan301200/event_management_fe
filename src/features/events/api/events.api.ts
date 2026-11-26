@@ -20,6 +20,11 @@ export const eventsKeys = {
   detail: (eventId: string) => [...eventsKeys.all, 'detail', eventId] as const,
   impact: (eventId: string, functionId: string) =>
     [...eventsKeys.detail(eventId), 'impact', functionId] as const,
+  /**
+   * The tasks feature's list (Module 7). Kept here so function edits, which move and unlink
+   * tasks (spec §10), can refresh it without `events` importing `tasks`.
+   */
+  tasks: (eventId: string) => [...eventsKeys.detail(eventId), 'tasks'] as const,
 };
 
 const eventPath = (eventId: string) => `/api/v1/events/${encodeURIComponent(eventId)}`;

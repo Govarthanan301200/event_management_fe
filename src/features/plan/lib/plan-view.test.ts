@@ -50,14 +50,30 @@ const line = (id: string, categoryId: string, lineBudget: number) => ({
 
 describe('groupByCategory', () => {
   it('keeps catalogue order, empty active categories, and archived ones only with lines', () => {
-    const bands = groupByCategory(catalogue, {
-      lines: [line('catering', 'food', 500), line('legacy', 'old', 100)],
-      envelopes: [{ categoryId: 'food', amount: 1000 }],
+    const rollup = (id: string, planned: number, envelope: number | null) => ({
+      id,
+      name: id,
+      byFunction: {},
+      shared: planned,
+      planned,
+      envelope,
+      left: envelope === null ? null : envelope - planned,
+      over: envelope !== null && planned > envelope,
     });
-    expect(bands.map((b) => [b.category.id, b.lines.length, b.planned, b.envelope])).toEqual([
-      ['food', 1, 500, 1000],
-      ['old', 1, 100, null],
-      ['ent', 0, 0, null],
+    const bands = groupByCategory(
+      catalogue,
+      {
+        lines: [line('catering', 'food', 500), line('legacy', 'old', 100)],
+        envelopes: [{ categoryId: 'food', amount: 1000 }],
+      },
+      { categories: [rollup('food', 500, 1000), rollup('old', 100, null)] },
+    );
+    expect(
+      bands.map((b) => [b.category.id, b.lines.length, b.planned, b.envelope, b.left]),
+    ).toEqual([
+      ['food', 1, 500, 1000, 500],
+      ['old', 1, 100, null, null],
+      ['ent', 0, 0, null, null],
     ]);
   });
 });

@@ -1,4 +1,7 @@
 import { http, HttpResponse } from 'msw';
+import { fakeSummary } from '@/features/summary/test/fake-summary';
+import type { Task } from '@/features/tasks';
+import { createTasksBackend } from '@/features/tasks/test/tasks-server';
 import type { LineInput, ServiceLine } from '../api/plan.schema';
 
 // An in-memory backend for S6/S7/S8 (event, catalogue, plan, vendor options): reads reflect writes.
@@ -224,7 +227,46 @@ const fn = (id: string, name: string, date: string, guestCount: number, sortOrde
   sortOrder,
 });
 
-export function createPlanServer(options_: { noFunctions?: boolean } = {}) {
+const seedTask = (id: string, extra: Partial<Task>): Task => ({
+  id,
+  eventFunctionId: null,
+  functionName: null,
+  serviceLineId: null,
+  serviceName: null,
+  vendor: null,
+  title: id,
+  dueDate: '2099-02-01',
+  dueTime: null,
+  remindBeforeMin: 15,
+  status: 'pending',
+  issueNote: null,
+  completedAt: null,
+  kind: 'pre_event',
+  ...extra,
+});
+
+/** Two tasks: a pre-event one on Catering, and Reception's photographer call time. */
+export const SEED_TASKS: Task[] = [
+  seedTask('t-tasting', {
+    title: 'Confirm menu tasting',
+    serviceLineId: 'l-catering',
+    serviceName: 'Catering',
+    vendor: { id: 'v-anna', name: 'Annapoorna Caterers', phone: '+91 98400 11111' },
+  }),
+  seedTask('t-photo', {
+    title: 'Photographer arrives',
+    eventFunctionId: 'f-reception',
+    functionName: 'Reception',
+    dueDate: '2099-02-14',
+    dueTime: '17:00',
+    kind: 'day_of',
+    serviceLineId: 'l-candid',
+    serviceName: 'Candid Photography',
+    vendor: { id: 'v-lens', name: 'Lens & Light', phone: '+91 98400 22222' },
+  }),
+];
+
+export function createPlanServer(options_: { noFunctions?: boolean; tasks?: Task[] } = {}) {
   const calls: Recorded[] = [];
   const vendorNames = { ...VENDOR_NAMES };
   const options: Record<string, VendorOptionRecord[]> = structuredClone(OPTIONS);
@@ -239,6 +281,19 @@ export function createPlanServer(options_: { noFunctions?: boolean } = {}) {
         fn('f-sangeet', 'Sangeet', '2099-02-12', 400, 1),
         fn('f-reception', 'Reception', '2099-02-14', 1200, 2),
       ];
+  const taskBackend = createTasksBackend({
+    functions: () => functions,
+    lines: () =>
+      lines.map((line) => ({
+        id: line.id,
+        serviceName: line.serviceName,
+        vendor:
+          line.defaultVendorId && line.defaultVendor
+            ? { id: line.defaultVendorId, name: line.defaultVendor.name, phone: '+91 98400 33333' }
+            : null,
+      })),
+    seed: options_.tasks ?? (options_.noFunctions ? [] : SEED_TASKS),
+  });
   let nextId = 1;
   const record = async (request: Request) => {
     const body: unknown = ['GET', 'DELETE'].includes(request.method)
@@ -307,11 +362,22 @@ export function createPlanServer(options_: { noFunctions?: boolean } = {}) {
             },
           ],
           functions,
-          plan: { services: lines.length, planned: 0 },
+          openTasks: taskBackend.openCount(),
         },
       }),
     ),
     http.get(`${API}/catalogue`, () => HttpResponse.json({ data: catalogue })),
+    http.get(`${API}/events/:id/summary`, () =>
+      HttpResponse.json({
+        data: fakeSummary({
+          overallBudget: 25_00_000,
+          functions,
+          categories: catalogue.categories,
+          lines,
+          envelopes,
+        }),
+      }),
+    ),
     http.get(`${API}/events/:id/service-lines`, () =>
       HttpResponse.json({
         data: {
@@ -357,6 +423,7 @@ export function createPlanServer(options_: { noFunctions?: boolean } = {}) {
     http.delete(`${API}/events/:id/service-lines/:lineId`, async ({ request, params }) => {
       await record(request);
       lines = lines.filter((l) => l.id !== params.lineId);
+      taskBackend.unlinkLine(String(params.lineId));
       return new HttpResponse(null, { status: 204 });
     }),
     http.put(`${API}/events/:id/envelopes/:categoryId`, async ({ request, params }) => {
@@ -408,5 +475,5 @@ export function createPlanServer(options_: { noFunctions?: boolean } = {}) {
       );
     }),
   ];
-  return { handlers, calls };
+  return { handlers: [...handlers, ...taskBackend.handlers], calls, tasks: taskBackend };
 }

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  formatGrouped,
   formatClock,
   formatDateRange,
   formatDateTime,
@@ -18,6 +19,14 @@ describe('formatINR', () => {
 
   it('handles zero', () => {
     expect(formatINR(0)).toBe('₹0');
+  });
+});
+
+describe('formatGrouped', () => {
+  it('groups the Indian way, without the rupee sign', () => {
+    expect(formatGrouped(12_00_000)).toBe('12,00,000');
+    expect(formatGrouped(75_000)).toBe('75,000');
+    expect(formatGrouped(0)).toBe('0');
   });
 });
 

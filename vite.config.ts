@@ -13,5 +13,8 @@ export default defineConfig({
     setupFiles: ['./src/test/setup.ts'],
     include: ['src/**/*.test.{ts,tsx}'],
     env: { VITE_API_URL: 'http://api.test' },
+    // The longest user-event flows (S8 drawer, task dialogs) take ~4-5s each while every file
+    // runs in parallel on Windows; the 5s default made them fail under load, not on behaviour.
+    testTimeout: 15_000,
   },
 });

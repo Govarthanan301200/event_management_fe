@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   Sheet,
   SheetContent,
@@ -7,9 +8,11 @@ import {
 } from '@/components/ui/sheet';
 import type { Catalogue } from '@/features/catalogue';
 import type { EventFunction } from '@/features/events';
+import { TaskDialog } from '@/features/tasks';
 import type { ServicePlan } from '../../api/plan.schema';
 import { useLineDrawer, type DrawerState } from '../../hooks/use-line-drawer';
 import { BudgetSection } from './budget-section';
+import { LineTasks } from './line-tasks';
 import { DrawerFooter } from './drawer-footer';
 import { FunctionChips } from './function-chips';
 import { RowsEditor } from './rows-editor';
@@ -40,6 +43,7 @@ const PARAM_LABEL = {
 export function ServiceDrawer(props: ServiceDrawerProps) {
   const { catalogue, plan, onOpenLine, onClose } = props;
   const drawer = useLineDrawer(props);
+  const [addingTask, setAddingTask] = useState(false);
   const { form, values, line, context, service, functions } = drawer;
   const { errors } = form.formState;
 
@@ -119,6 +123,13 @@ export function ServiceDrawer(props: ServiceDrawerProps) {
               </ul>
             ) : null}
             <BudgetSection form={form} values={values} service={service} functions={functions} />
+            <LineTasks
+              eventId={props.eventId}
+              lineId={line?.id ?? null}
+              onAdd={() => {
+                setAddingTask(true);
+              }}
+            />
           </div>
           <DrawerFooter
             error={drawer.save.error}
@@ -129,6 +140,18 @@ export function ServiceDrawer(props: ServiceDrawerProps) {
             onCancel={onClose}
           />
         </form>
+        {/* Outside the form: a portal still bubbles submit through the React tree. */}
+        {addingTask && line ? (
+          <TaskDialog
+            mode={{
+              kind: 'add',
+              preset: { functionIds: values.functionIds, serviceLineId: line.id },
+            }}
+            onClose={() => {
+              setAddingTask(false);
+            }}
+          />
+        ) : null}
       </SheetContent>
     </Sheet>
   );

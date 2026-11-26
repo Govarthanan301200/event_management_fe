@@ -1,22 +1,27 @@
 import { Button } from '@/components/ui/button';
 import type { EventDetail } from '@/features/events';
+import type { EventMoneySummary } from '@/features/summary';
 import { formatINR } from '@/lib/format';
 import { cn } from '@/lib/utils';
 
-type PlanSummaryProps = { event: EventDetail; planned: number; onAdd: () => void };
+type PlanSummaryProps = {
+  event: EventDetail;
+  summary: Pick<EventMoneySummary, 'planned' | 'overallBudget' | 'left'>;
+  onAdd: () => void;
+};
 
 const guests = new Intl.NumberFormat('en-IN');
 
 /** S7 top: planned of budget, the one primary action, and the sticky function strip. */
-export function PlanSummary({ event, planned, onAdd }: PlanSummaryProps) {
-  const budget = event.overallBudget;
-  const over = budget !== null && planned > budget;
+export function PlanSummary({ event, summary, onAdd }: PlanSummaryProps) {
+  const { planned, overallBudget: budget, left } = summary;
+  const over = left !== null && left < 0;
   return (
     <>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-body">
           Planned <span className="text-figure tabular-nums">{formatINR(planned)}</span>
-          {budget === null ? (
+          {budget === null || left === null ? (
             <span className="text-muted-foreground"> · No overall budget</span>
           ) : (
             <>
@@ -27,9 +32,7 @@ export function PlanSummary({ event, planned, onAdd }: PlanSummaryProps) {
                   over ? 'font-medium text-danger' : 'text-muted-foreground',
                 )}
               >
-                {over
-                  ? `⚠ ${formatINR(planned - budget)} over`
-                  : `${formatINR(budget - planned)} left`}
+                {over ? `⚠ ${formatINR(-left)} over` : `${formatINR(left)} left`}
               </span>
             </>
           )}
