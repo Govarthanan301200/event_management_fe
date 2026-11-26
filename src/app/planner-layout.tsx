@@ -1,30 +1,43 @@
-import { useQueryClient } from '@tanstack/react-query';
-import { CalendarDays, List, LogOut, Store, type LucideIcon } from 'lucide-react';
-import { NavLink, Outlet, useNavigate } from 'react-router';
+import {
+  CalendarCheck,
+  CalendarDays,
+  List,
+  ListTodo,
+  LogOut,
+  Store,
+  type LucideIcon,
+} from 'lucide-react';
+import { NavLink, Outlet } from 'react-router';
 import { Button } from '@/components/ui/button';
-import { signOut } from '@/features/auth';
 import { cn } from '@/lib/utils';
+import { MobileTabBar } from './mobile-tab-bar';
+import { MobileTopBar } from './mobile-top-bar';
+import { useSignOut } from './use-sign-out';
 
 type Section = { to: string; label: string; icon: LucideIcon };
 
 /**
  * Spec §3 sections that exist so far. Dashboard (Module 9) and Inventory (Module 10) join the
- * list when they are built (decision 2026-11-24).
+ * list when they are built (decision 2026-11-24). Today and Upcoming, the mobile app's tabs, also
+ * work on the web (decision 2026-11-26).
  */
 const mainSections: Section[] = [
   { to: '/events', label: 'Events', icon: CalendarDays },
+  { to: '/today', label: 'Today', icon: CalendarCheck },
+  { to: '/upcoming', label: 'Upcoming', icon: ListTodo },
   { to: '/vendors', label: 'Vendors', icon: Store },
   { to: '/settings', label: 'Services', icon: List },
 ];
 
 /**
  * Planner web shell (design system: left sidebar on `surface-sunken`, active item with a
- * `gold-soft` fill and a 3px `gold` bar). Below 1024px the sidebar collapses to icons.
+ * `gold-soft` fill and a 3px `gold` bar). Below 1024px the sidebar collapses to icons; below 640px
+ * the bottom tab bar (Today · Upcoming · Events) replaces it (decision 2026-11-26).
  */
 export function PlannerLayout() {
   return (
     <div className="flex min-h-dvh">
-      <aside className="sticky top-0 flex h-dvh w-14 shrink-0 flex-col border-r border-border bg-sidebar py-4 lg:w-sidebar">
+      <aside className="sticky top-0 flex h-dvh w-14 shrink-0 flex-col border-r border-border bg-sidebar py-4 max-sm:hidden lg:w-sidebar">
         <div className="flex h-10 items-center px-2 lg:px-5">
           <span className="hidden text-title-serif font-display lg:inline">Wedding planner</span>
           <span className="mx-auto text-title-serif font-display lg:hidden" aria-hidden="true">
@@ -40,11 +53,15 @@ export function PlannerLayout() {
           <SignOutButton />
         </div>
       </aside>
-      <main className="min-w-0 flex-1 px-4 py-8 sm:px-8">
-        <div className="mx-auto w-full max-w-content">
-          <Outlet />
-        </div>
-      </main>
+      <div className="flex min-w-0 flex-1 flex-col">
+        <MobileTopBar />
+        <main className="min-w-0 flex-1 px-4 pt-6 pb-24 sm:px-8 sm:py-8">
+          <div className="mx-auto w-full max-w-content">
+            <Outlet />
+          </div>
+        </main>
+      </div>
+      <MobileTabBar />
     </div>
   );
 }
@@ -73,19 +90,13 @@ function SidebarLink({ section }: SidebarLinkProps) {
 }
 
 function SignOutButton() {
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
+  const signOut = useSignOut();
   return (
     <Button
       variant="ghost"
       title="Sign out"
       className="h-10 w-full justify-center gap-3 px-2 text-muted-foreground lg:justify-start lg:px-3"
-      onClick={() => {
-        void signOut().then(() => {
-          queryClient.clear();
-          void navigate('/sign-in');
-        });
-      }}
+      onClick={signOut}
     >
       <LogOut className="size-5" strokeWidth={1.5} aria-hidden="true" />
       <span className="sr-only lg:not-sr-only">Sign out</span>

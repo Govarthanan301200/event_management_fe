@@ -21,6 +21,7 @@ const anna = { id: 'v-anna', name: 'Annapoorna Caterers', phone: '+91 98400 1111
 
 const task = (id: string, extra: Partial<Task>): Task => ({
   id,
+  eventId: 'e1',
   eventFunctionId: null,
   functionName: null,
   serviceLineId: null,

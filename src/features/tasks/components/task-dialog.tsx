@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery } from '@tanstack/react-query';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 import { toast } from 'sonner';
+import { phoneSheetClass } from '@/components/shared/phone-sheet';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -21,11 +22,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useWorkspaceEvent } from '@/features/events';
+import { eventDetailOptions } from '@/features/events';
 // Deep import on purpose: the plan feature's components use this feature, so its index would
 // make an import cycle. The API module depends on nothing from either.
 import { planOptions } from '@/features/plan/api/plan.api';
 import { errorMessage } from '@/lib/api-client';
+import { cn } from '@/lib/utils';
 import type { Task } from '../api/tasks.schema';
 import { useCreateTasks, useUpdateTask } from '../hooks/use-tasks';
 import { lineOptions } from '../lib/line-options';
@@ -44,17 +46,19 @@ import { FunctionPicker } from './function-picker';
 
 export type TaskDialogMode = { kind: 'add'; preset: TaskPreset } | { kind: 'edit'; task: Task };
 
-type TaskDialogProps = { mode: TaskDialogMode; onClose: () => void };
+type TaskDialogProps = { eventId: string; mode: TaskDialogMode; onClose: () => void };
 
 /**
- * Add or edit a task (spec §13 fields). Opened from S11, S9 and S8; mount with a `key` per task.
- * Every task comes from this form: none is ever created without the planner (core rule 8).
+ * Add or edit a task (spec §13 fields). Opened from S11, S9, S8, Today and Upcoming; mount with a
+ * `key` per task. Every task comes from this form: none is ever created without the planner (core
+ * rule 8). The event's functions come from its detail query (cached on the workspace tabs).
  */
-export function TaskDialog({ mode, onClose }: TaskDialogProps) {
-  const { event } = useWorkspaceEvent();
-  const plan = useQuery(planOptions(event.id));
-  const create = useCreateTasks(event.id);
-  const update = useUpdateTask(event.id);
+export function TaskDialog({ eventId, mode, onClose }: TaskDialogProps) {
+  const event = useQuery(eventDetailOptions(eventId));
+  const functions = event.data?.functions ?? [];
+  const plan = useQuery(planOptions(eventId));
+  const create = useCreateTasks(eventId);
+  const update = useUpdateTask(eventId);
   const form = useForm<TaskForm>({
     resolver: zodResolver(taskFormSchema),
     defaultValues: toTaskForm(mode.kind === 'edit' ? { task: mode.task } : { preset: mode.preset }),
@@ -101,7 +105,7 @@ export function TaskDialog({ mode, onClose }: TaskDialogProps) {
         if (!open) onClose();
       }}
     >
-      <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-lg">
+      <DialogContent className={cn('max-h-[90dvh] overflow-y-auto sm:max-w-lg', phoneSheetClass)}>
         <form noValidate onSubmit={(e) => void onSubmit(e)} className="flex flex-col gap-6">
           <DialogHeader>
             <DialogTitle className="text-title-serif">
@@ -126,9 +130,9 @@ export function TaskDialog({ mode, onClose }: TaskDialogProps) {
                 <FieldError id="task-title-error">{errors.title.message}</FieldError>
               ) : null}
             </Field>
-            {event.functions.length > 0 ? (
+            {functions.length > 0 ? (
               <FunctionPicker
-                functions={event.functions}
+                functions={functions}
                 selected={functionIds}
                 multiple={mode.kind === 'add'}
                 onChange={(ids) => {

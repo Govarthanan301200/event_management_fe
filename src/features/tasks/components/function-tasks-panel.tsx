@@ -42,7 +42,7 @@ export function FunctionTasksPanel({ eventId, fn }: FunctionTasksPanelProps) {
         </Button>
       </div>
       <PanelBody state={tasks}>{rows}</PanelBody>
-      <TaskDialogs eventId={eventId} open={dialogs.open} onClose={dialogs.close} />
+      <TaskDialogs open={dialogs.open} onClose={dialogs.close} />
     </section>
   );
 }

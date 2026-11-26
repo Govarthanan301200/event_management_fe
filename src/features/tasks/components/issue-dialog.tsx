@@ -1,5 +1,7 @@
+import { onlineManager } from '@tanstack/react-query';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { phoneSheetClass } from '@/components/shared/phone-sheet';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -13,14 +15,18 @@ import {
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Textarea } from '@/components/ui/textarea';
 import { errorMessage } from '@/lib/api-client';
+import { cn } from '@/lib/utils';
 import type { Task } from '../api/tasks.schema';
-import { useSetTaskStatus } from '../hooks/use-tasks';
+import { useTaskStatus } from '../hooks/use-task-status';
 
-type IssueDialogProps = { eventId: string; task: Task; onClose: () => void };
+type IssueDialogProps = { task: Task; onClose: () => void };
 
-/** Mark as issue: a note is required (decision 2026-11-26). Mount with a `key` per task. */
-export function IssueDialog({ eventId, task, onClose }: IssueDialogProps) {
-  const setStatus = useSetTaskStatus(eventId);
+/**
+ * Mark as issue: a note is required (decision 2026-11-26). Mount with a `key` per task. Offline
+ * the change is queued (spec §14), so the dialog closes at once instead of waiting.
+ */
+export function IssueDialog({ task, onClose }: IssueDialogProps) {
+  const setStatus = useTaskStatus();
   const [note, setNote] = useState(task.issueNote ?? '');
   const [touched, setTouched] = useState(false);
   const missing = note.trim() === '';
@@ -28,15 +34,20 @@ export function IssueDialog({ eventId, task, onClose }: IssueDialogProps) {
   const submit = () => {
     setTouched(true);
     if (missing) return;
-    setStatus.mutate(
-      { taskId: task.id, change: { status: 'issue', issueNote: note.trim() } },
-      {
-        onSuccess: () => {
-          onClose();
-          toast.success('Marked as issue');
-        },
+    const target = { eventId: task.eventId, taskId: task.id };
+    const change = { status: 'issue' as const, issueNote: note.trim() };
+    if (!onlineManager.isOnline()) {
+      setStatus.mutate(target, change);
+      onClose();
+      toast.success('Marked as issue · it syncs when you are back online');
+      return;
+    }
+    setStatus.mutate(target, change, {
+      onSuccess: () => {
+        onClose();
+        toast.success('Marked as issue');
       },
-    );
+    });
   };
 
   return (
@@ -46,7 +57,7 @@ export function IssueDialog({ eventId, task, onClose }: IssueDialogProps) {
         if (!open) onClose();
       }}
     >
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className={cn('sm:max-w-md', phoneSheetClass)}>
         <form
           noValidate
           onSubmit={(e) => {

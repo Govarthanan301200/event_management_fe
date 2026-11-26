@@ -36,8 +36,15 @@ export const taskFormSchema = z
   });
 export type TaskForm = z.infer<typeof taskFormSchema>;
 
-/** Where a new task starts: S8 pre-fills its line and functions; S9 its function (spec §13). */
-export type TaskPreset = { functionIds?: readonly string[]; serviceLineId?: string | null };
+/**
+ * Where a new task starts: S8 pre-fills its line and functions; S9 and Today their function;
+ * Upcoming its date (spec §13, decision 2026-11-26).
+ */
+export type TaskPreset = {
+  functionIds?: readonly string[];
+  serviceLineId?: string | null;
+  dueDate?: string;
+};
 
 export function toTaskForm(source: { task: Task } | { preset: TaskPreset }): TaskForm {
   if ('task' in source) {
@@ -54,7 +61,7 @@ export function toTaskForm(source: { task: Task } | { preset: TaskPreset }): Tas
   return {
     title: '',
     functionIds: [...(source.preset.functionIds ?? [])],
-    dueDate: '',
+    dueDate: source.preset.dueDate ?? '',
     dueTime: '',
     serviceLineId: source.preset.serviceLineId ?? NO_LINE,
     remindBeforeMin: '15',

@@ -2,6 +2,7 @@ import { createBrowserRouter, Navigate } from 'react-router';
 import { RequireAuth, SignInPage } from '@/features/auth';
 import { CataloguePage, FunctionTypesPage } from '@/features/catalogue';
 import { ClientFormPage } from '@/features/client-form';
+import { TodayPage, UpcomingPage } from '@/features/day-of';
 import { EventOverviewPage, EventsPage, EventWorkspace } from '@/features/events';
 import { ByFunctionPage, PlanPage, SummaryPage } from '@/features/plan';
 import { TasksPage } from '@/features/tasks';
@@ -11,6 +12,7 @@ import {
   VendorDirectoryPage,
   VendorProfilePage,
 } from '@/features/vendors';
+import { HomeRedirect } from './home-redirect';
 import { NotFoundPage } from './not-found-page';
 import { PlannerLayout } from './planner-layout';
 import { SettingsLayout } from './settings-layout';
@@ -25,7 +27,10 @@ export const routes = [
       {
         element: <PlannerLayout />,
         children: [
-          { index: true, element: <Navigate to="/events" replace /> },
+          { index: true, element: <HomeRedirect /> },
+          // Spec §14 planner mobile app (S12 Today, Upcoming); responsive, every width.
+          { path: '/today', element: <TodayPage /> },
+          { path: '/upcoming', element: <UpcomingPage /> },
           { path: '/events', element: <EventsPage /> },
           {
             // Spec §3 event workspace: Overview (S6), Plan by category (S7), By function (S9),

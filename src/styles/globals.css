@@ -6,6 +6,8 @@
 @import 'shadcn/tailwind.css'; /* shadcn custom variants (data-open etc.) used by generated components */
 
 @custom-variant dark (&:is(.dark *));
+/* S12 sunlight mode (design system: Mobile Today), set on <html> by the ☀ toggle. */
+@custom-variant sunlight (&:where([data-contrast='high'], [data-contrast='high'] *));
 
 :root {
   /* surfaces */
@@ -250,5 +252,46 @@
 
 /* Sticky footers (S1 "Send to planner") must never cover the focused field (design system: Accessibility). */
 html:has([data-sticky-footer]) {
+  scroll-padding-bottom: 10rem;
+}
+
+/*
+ * Sunlight mode (design system: Mobile Today): secondary text lifts to ink and dividers take the
+ * control edge, so the screen holds up outdoors. Components double their borders with `sunlight:`.
+ */
+html[data-contrast='high'] {
+  --muted-foreground: var(--foreground);
+  --border: var(--input);
+}
+
+/* Done on mobile: a 160ms check stroke draw (design system: Motion). */
+@keyframes check-draw {
+  from {
+    stroke-dashoffset: 24;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@utility animate-check-draw {
+  stroke-dasharray: 24;
+  animation: check-draw 160ms cubic-bezier(0.2, 0, 0, 1) both;
+}
+
+/* Opened from a reminder: the task glows gold-soft for 2s, then settles. */
+@keyframes arrive {
+  from {
+    background-color: var(--gold-soft);
+  }
+  to {
+    background-color: var(--card);
+  }
+}
+@utility animate-arrive {
+  animation: arrive 2s cubic-bezier(0.4, 0, 1, 1) both;
+}
+
+/* The mobile tab bar and the Add task button must never cover the focused element. */
+html:has([data-tab-bar]) {
   scroll-padding-bottom: 10rem;
 }

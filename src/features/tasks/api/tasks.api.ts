@@ -6,13 +6,24 @@ import { apiRequest, dataOf } from '@/lib/api-client';
 import {
   taskSchema,
   type CreateTaskInput,
-  type StatusChange,
+  type StatusRequest,
   type UpdateTaskInput,
 } from './tasks.schema';
 
 export const tasksKeys = {
   /** Nested under the event (see `eventsKeys.tasks`), so function edits refresh it. */
   event: (eventId: string) => eventsKeys.tasks(eventId),
+  /** Status changes share one key: queued offline, persisted, replayed in order (spec §14). */
+  status: () => ['tasks', 'status'] as const,
+};
+
+/**
+ * Today and Upcoming (spec §14), across events. Here rather than in the day-of feature so every
+ * task change can refresh them without this feature importing that one.
+ */
+export const agendaKeys = {
+  all: ['agenda'] as const,
+  range: (from: string | null, days: number) => [...agendaKeys.all, from ?? 'today', days] as const,
 };
 
 const tasksPath = (eventId: string) => `/api/v1/events/${encodeURIComponent(eventId)}/tasks`;
@@ -46,11 +57,14 @@ export async function updateTask(eventId: string, taskId: string, input: UpdateT
   });
 }
 
-export async function setTaskStatus(eventId: string, taskId: string, change: StatusChange) {
+/** `meta.applied` (false for a replay or an older change) isn't needed: the refetch shows the result. */
+export async function setTaskStatus(request: StatusRequest) {
+  const { eventId, taskId, change, changedAt, idempotencyKey } = request;
   return apiRequest(`${taskPath(eventId, taskId)}/status`, dataOf(taskSchema), {
     method: 'PATCH',
     token: await getAccessToken(),
-    body: change,
+    headers: { 'Idempotency-Key': idempotencyKey },
+    body: { ...change, changedAt },
   });
 }
 

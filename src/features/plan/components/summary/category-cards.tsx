@@ -10,7 +10,7 @@ import {
   type CategoryCardView,
   type SummarySelection,
 } from '../../lib/summary-view';
-import { ChipSwitcher } from '../chip-switcher';
+import { ChipSwitcher } from '@/components/shared/chip-switcher';
 
 type CategoryCardsProps = { eventId: string; summary: EventMoneySummary };
 

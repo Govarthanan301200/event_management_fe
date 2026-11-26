@@ -1,5 +1,11 @@
 export { TasksPage } from './components/tasks-page';
 export { FunctionTasksPanel } from './components/function-tasks-panel';
 export { TaskDialog, type TaskDialogMode } from './components/task-dialog';
-export { tasksKeys, tasksOptions } from './api/tasks.api';
-export type { Task } from './api/tasks.schema';
+export { TaskDialogs } from './components/task-dialogs';
+export { TaskTag } from './components/task-tag';
+export { useTaskDialogs, type TaskActions } from './hooks/use-task-dialogs';
+export { registerTaskStatusDefaults } from './hooks/use-task-status';
+export { agendaKeys, tasksKeys, tasksOptions } from './api/tasks.api';
+export { taskSchema, type Task } from './api/tasks.schema';
+export { isOverdue, nowIn } from './lib/task-groups';
+export { remindLabel } from './lib/task-form';

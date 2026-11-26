@@ -1,26 +1,30 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { eventsKeys } from '@/features/events';
 import {
+  agendaKeys,
   createTasks,
   deleteTask,
-  setTaskStatus,
   tasksKeys,
   tasksOptions,
   updateTask,
 } from '../api/tasks.api';
-import type { CreateTaskInput, StatusChange, UpdateTaskInput } from '../api/tasks.schema';
+import type { CreateTaskInput, UpdateTaskInput } from '../api/tasks.schema';
 
 export function useTasks(eventId: string) {
   return useQuery(tasksOptions(eventId));
 }
 
-/** A task change also changes S6's open-task count, which rides on the event detail. */
+/**
+ * A task change also changes S6's open-task count, which rides on the event detail, and Today
+ * and Upcoming (Module 8).
+ */
 function useRefresh(eventId: string) {
   const queryClient = useQueryClient();
   return () =>
     Promise.all([
       queryClient.invalidateQueries({ queryKey: tasksKeys.event(eventId) }),
       queryClient.invalidateQueries({ queryKey: eventsKeys.detail(eventId), exact: true }),
+      queryClient.invalidateQueries({ queryKey: agendaKeys.all }),
     ]);
 }
 
@@ -37,15 +41,6 @@ export function useUpdateTask(eventId: string) {
   return useMutation({
     mutationFn: ({ taskId, input }: { taskId: string; input: UpdateTaskInput }) =>
       updateTask(eventId, taskId, input),
-    onSuccess: refresh,
-  });
-}
-
-export function useSetTaskStatus(eventId: string) {
-  const refresh = useRefresh(eventId);
-  return useMutation({
-    mutationFn: ({ taskId, change }: { taskId: string; change: StatusChange }) =>
-      setTaskStatus(eventId, taskId, change),
     onSuccess: refresh,
   });
 }
