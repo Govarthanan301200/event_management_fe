@@ -13,6 +13,7 @@ export function serviceFormDefaults(mode: ServiceDialogMode): ServiceForm {
       description: '',
       categoryId: mode.category.id,
       showOnClientForm: true,
+      hasRooms: false,
       parameterMode: 'inherit',
       override: [],
     };
@@ -23,6 +24,7 @@ export function serviceFormDefaults(mode: ServiceDialogMode): ServiceForm {
     description: service.description ?? '',
     categoryId: service.categoryId,
     showOnClientForm: service.showOnClientForm,
+    hasRooms: service.hasRooms,
     parameterMode: service.parametersOverride ? 'override' : 'inherit',
     override: service.parametersOverride ?? [],
   };
@@ -39,6 +41,7 @@ export function serviceChangeFrom(
     name: values.name.trim(),
     description: values.description.trim(),
     showOnClientForm: values.showOnClientForm,
+    hasRooms: values.hasRooms,
     parametersOverride: values.parameterMode === 'override' ? values.override : null,
   };
   if (current && values.categoryId !== current.categoryId) {

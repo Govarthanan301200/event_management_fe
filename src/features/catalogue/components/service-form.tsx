@@ -130,6 +130,28 @@ export function ServiceForm({ mode, categories, onDone }: ServiceFormProps) {
             </div>
           )}
         />
+        <Controller
+          control={form.control}
+          name="hasRooms"
+          render={({ field }) => (
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-3">
+                <Switch
+                  id="service-rooms"
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                  aria-describedby="service-rooms-help"
+                />
+                <Label htmlFor="service-rooms" className="text-body font-normal">
+                  Has rooms and guests · {field.value ? 'On' : 'Off'}
+                </Label>
+              </div>
+              <p id="service-rooms-help" className="text-caption text-muted-foreground">
+                This service&apos;s line in Plan opens the event&apos;s rooms and guests table.
+              </p>
+            </div>
+          )}
+        />
         <ParameterChoice
           control={form.control}
           category={target}

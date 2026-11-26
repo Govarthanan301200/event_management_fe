@@ -12,7 +12,7 @@ import { useSignOut } from './use-sign-out';
 
 /**
  * Below 640px the sidebar gives way to the tab bar (decision 2026-11-26), so the rest of the web
- * app's sections and Sign out sit in this bar's ⋯ menu.
+ * app's sections (Dashboard, Vendors, Services) and Sign out sit in this bar's ⋯ menu.
  */
 export function MobileTopBar() {
   const signOut = useSignOut();
@@ -26,6 +26,9 @@ export function MobileTopBar() {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="min-w-48">
+          <DropdownMenuItem asChild className="h-12">
+            <Link to="/dashboard">Dashboard</Link>
+          </DropdownMenuItem>
           <DropdownMenuItem asChild className="h-12">
             <Link to="/vendors">Vendors</Link>
           </DropdownMenuItem>

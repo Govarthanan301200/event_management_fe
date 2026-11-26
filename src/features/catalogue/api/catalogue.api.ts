@@ -78,6 +78,7 @@ export type ServiceInput = {
   name: string;
   description: string;
   showOnClientForm: boolean;
+  hasRooms: boolean;
   parametersOverride: ParameterKey[] | null;
 };
 

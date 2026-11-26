@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { useSearchParams } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useScrollToTask } from '@/hooks/use-scroll-to-task';
 import { useWorkspaceEvent } from '@/features/events';
 import { useTaskDialogs } from '../hooks/use-task-dialogs';
 import { useTasks } from '../hooks/use-tasks';
@@ -28,6 +29,9 @@ export function TasksPage() {
   const dialogs = useTaskDialogs(event.id);
   const [params, setParams] = useSearchParams();
   const filters = readFilters(params);
+  // Opened from the dashboard (decision 2026-11-26): scroll to the task once it has loaded.
+  const arrivedId = params.get('task');
+  useScrollToTask(tasks.data?.some((task) => task.id === arrivedId) ? arrivedId : null);
 
   const setFilter = (key: 'status' | 'fn' | 'vendor', value: string | null) => {
     setParams(
@@ -103,6 +107,7 @@ export function TasksPage() {
               sections={groupTasks(shown, event.functions)}
               now={nowIn()}
               actions={dialogs.actions}
+              arrivedId={arrivedId}
             />
           );
         }}

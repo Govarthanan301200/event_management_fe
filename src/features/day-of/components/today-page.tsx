@@ -7,7 +7,7 @@ import { useAppBadge } from '../hooks/use-app-badge';
 import { useTodayAgenda } from '../hooks/use-agenda';
 import { useConnectivity } from '../hooks/use-connectivity';
 import { useNow } from '../hooks/use-now';
-import { useScrollToTask } from '../hooks/use-scroll-to-task';
+import { useScrollToTask } from '@/hooks/use-scroll-to-task';
 import {
   defaultScope,
   groupToday,

@@ -21,13 +21,14 @@ const svc = (
   name,
   description: null,
   showOnClientForm: true,
+  hasRooms: false,
   parametersOverride: null,
   effectiveParameters,
   sortOrder,
   archivedAt: null,
 });
 
-const catalogue = {
+const CATALOGUE = {
   canReset: false,
   categories: [
     {
@@ -141,6 +142,35 @@ const OPTIONS: Record<
   ],
 };
 
+/** Opt-in (`rooms: true`): a Venue and Accommodation band whose Accommodation opens S14. */
+const ROOMS_CATEGORY = {
+  id: 'c-venue',
+  name: 'Venue and Accommodation',
+  sortOrder: 4,
+  parameters: ['pax'],
+  paxPrefill: true,
+  sizeLabels: [],
+  archivedAt: null,
+  services: [{ ...svc('s-accommodation', 'c-venue', 'Accommodation', ['pax'], 0), hasRooms: true }],
+};
+
+function accommodationLine(): ServiceLine {
+  return {
+    id: 'l-accommodation',
+    serviceId: 's-accommodation',
+    serviceName: 'Accommodation',
+    categoryId: 'c-venue',
+    serviceArchived: false,
+    serviceHasRooms: true,
+    defaultVendorId: null,
+    defaultVendor: null,
+    perFunctionVendor: false,
+    lineBudget: 2_40_000,
+    notes: null,
+    rows: [],
+  };
+}
+
 type VendorRefOf = (id: string | null) => ServiceLine['defaultVendor'];
 
 function seedLines(vendorRef: VendorRefOf): ServiceLine[] {
@@ -151,6 +181,7 @@ function seedLines(vendorRef: VendorRefOf): ServiceLine[] {
       serviceName: 'Catering',
       categoryId: 'c-food',
       serviceArchived: false,
+      serviceHasRooms: false,
       defaultVendorId: 'v-anna',
       defaultVendor: vendorRef('v-anna'),
       perFunctionVendor: true,
@@ -183,6 +214,7 @@ function seedLines(vendorRef: VendorRefOf): ServiceLine[] {
       serviceName: 'Candid Photography',
       categoryId: 'c-photo',
       serviceArchived: false,
+      serviceHasRooms: false,
       defaultVendorId: 'v-lens',
       defaultVendor: vendorRef('v-lens'),
       perFunctionVendor: false,
@@ -267,13 +299,20 @@ export const SEED_TASKS: Task[] = [
   }),
 ];
 
-export function createPlanServer(options_: { noFunctions?: boolean; tasks?: Task[] } = {}) {
+export function createPlanServer(
+  options_: { noFunctions?: boolean; tasks?: Task[]; rooms?: boolean } = {},
+) {
+  const catalogue = options_.rooms
+    ? { ...CATALOGUE, categories: [...CATALOGUE.categories, ROOMS_CATEGORY] }
+    : CATALOGUE;
   const calls: Recorded[] = [];
   const vendorNames = { ...VENDOR_NAMES };
   const options: Record<string, VendorOptionRecord[]> = structuredClone(OPTIONS);
   const vendorRef: VendorRefOf = (id) =>
     id ? { name: vendorNames[id] ?? id, archived: false, offersService: true } : null;
-  let lines = seedLines(vendorRef);
+  let lines = options_.rooms
+    ? [...seedLines(vendorRef), accommodationLine()]
+    : seedLines(vendorRef);
   const envelopes = new Map<string, number>([['c-food', 5_00_000]]);
   const functions = options_.noFunctions
     ? []
@@ -315,6 +354,7 @@ export function createPlanServer(options_: { noFunctions?: boolean; tasks?: Task
     serviceName: serviceName(serviceId)?.name ?? '?',
     categoryId: serviceName(serviceId)?.categoryId ?? '?',
     serviceArchived: false,
+    serviceHasRooms: serviceName(serviceId)?.hasRooms ?? false,
     defaultVendorId: input.defaultVendorId,
     defaultVendor: vendorRef(input.defaultVendorId),
     perFunctionVendor: input.perFunctionVendor,

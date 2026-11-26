@@ -23,6 +23,8 @@ export const serviceSchema = z.object({
   name: z.string(),
   description: z.string().nullable(),
   showOnClientForm: z.boolean(),
+  /** Opens Rooms and guests (S14) from this service's line on S7 (decision 2026-11-27). */
+  hasRooms: z.boolean(),
   /** null = inherit the category's parameters. */
   parametersOverride: z.array(parameterKeySchema).nullable(),
   effectiveParameters: z.array(parameterKeySchema),
@@ -76,6 +78,7 @@ export const serviceFormSchema = z
     description: z.string().trim().max(500, 'Keep the description under 500 characters'),
     categoryId: z.string().min(1),
     showOnClientForm: z.boolean(),
+    hasRooms: z.boolean(),
     parameterMode: z.enum(['inherit', 'override']),
     override: z.array(parameterKeySchema),
   })

@@ -1,6 +1,7 @@
 import {
   CalendarCheck,
   CalendarDays,
+  LayoutDashboard,
   List,
   ListTodo,
   LogOut,
@@ -17,11 +18,12 @@ import { useSignOut } from './use-sign-out';
 type Section = { to: string; label: string; icon: LucideIcon };
 
 /**
- * Spec §3 sections that exist so far. Dashboard (Module 9) and Inventory (Module 10) join the
- * list when they are built (decision 2026-11-24). Today and Upcoming, the mobile app's tabs, also
- * work on the web (decision 2026-11-26).
+ * Spec §3 sections that exist so far, Dashboard first (Module 9, decision 2026-11-26). Inventory
+ * (Module 10) joins the list when it is built (decision 2026-11-24). Today and Upcoming, the mobile
+ * app's tabs, also work on the web (decision 2026-11-26).
  */
 const mainSections: Section[] = [
+  { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/events', label: 'Events', icon: CalendarDays },
   { to: '/today', label: 'Today', icon: CalendarCheck },
   { to: '/upcoming', label: 'Upcoming', icon: ListTodo },

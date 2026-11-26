@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
@@ -70,14 +71,14 @@ function renderAt(path: string) {
 }
 
 describe('planner sidebar (spec §3, decisions 2026-11-24 and 2026-11-26)', () => {
-  it('lists Events, Today, Upcoming, Vendors and Services, and marks the current section', () => {
+  it('lists Dashboard first, then Events, Today, Upcoming, Vendors and Services, marking the current one', () => {
     renderAt('/vendors/v-1');
     const nav = screen.getByRole('navigation', { name: 'Main' });
     expect(
       within(nav)
         .getAllByRole('link')
         .map((link) => link.textContent),
-    ).toEqual(['Events', 'Today', 'Upcoming', 'Vendors', 'Services']);
+    ).toEqual(['Dashboard', 'Events', 'Today', 'Upcoming', 'Vendors', 'Services']);
     expect(within(nav).getByRole('link', { name: 'Vendors' })).toHaveAttribute(
       'aria-current',
       'page',
@@ -85,9 +86,14 @@ describe('planner sidebar (spec §3, decisions 2026-11-24 and 2026-11-26)', () =
     expect(within(nav).getByRole('link', { name: 'Events' })).not.toHaveAttribute('aria-current');
   });
 
-  it('has no Dashboard or Inventory until those modules are built', () => {
-    renderAt('/events');
-    expect(screen.queryByRole('link', { name: /dashboard|inventory/i })).not.toBeInTheDocument();
+  it('links Dashboard to /dashboard, and has no Inventory until Module 10 is built', () => {
+    renderAt('/dashboard');
+    const nav = screen.getByRole('navigation', { name: 'Main' });
+    expect(within(nav).getByRole('link', { name: 'Dashboard' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
+    expect(screen.queryByRole('link', { name: /inventory/i })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Sign out' })).toBeInTheDocument();
   });
 });
@@ -108,8 +114,19 @@ describe('phone tab bar (spec §3 mobile app, decision 2026-11-26)', () => {
     expect(await within(bar).findByRole('link', { name: 'Today, 1 overdue' })).toBeInTheDocument();
   });
 
-  it('keeps Vendors, Services and Sign out in the phone top bar menu', () => {
+  it('keeps Dashboard, Vendors, Services and Sign out in the phone top bar menu', async () => {
     renderAt('/today');
-    expect(screen.getByRole('button', { name: 'More' })).toBeInTheDocument();
+    vi.useRealTimers(); // user-event waits on real timers
+    await userEvent.setup().click(screen.getByRole('button', { name: 'More' }));
+    const menu = await screen.findByRole('menu');
+    expect(
+      within(menu)
+        .getAllByRole('menuitem')
+        .map((item) => item.textContent),
+    ).toEqual(['Dashboard', 'Vendors', 'Services', 'Sign out']);
+    expect(within(menu).getByRole('menuitem', { name: 'Dashboard' })).toHaveAttribute(
+      'href',
+      '/dashboard',
+    );
   });
 });

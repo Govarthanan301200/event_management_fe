@@ -11,6 +11,7 @@ type ServiceRecord = {
   name: string;
   description: string | null;
   showOnClientForm: boolean;
+  hasRooms: boolean;
   parametersOverride: ParameterKey[] | null;
   sortOrder: number;
   archivedAt: string | null;
@@ -67,6 +68,7 @@ export function createCatalogueServer(options: { canReset?: boolean } = {}) {
       name: 'Candid Photography',
       description: 'Natural, unposed moments',
       showOnClientForm: true,
+      hasRooms: false,
       parametersOverride: null,
       sortOrder: 0,
       archivedAt: null,
@@ -77,6 +79,7 @@ export function createCatalogueServer(options: { canReset?: boolean } = {}) {
       name: 'Drone Coverage',
       description: 'Aerial shots',
       showOnClientForm: true,
+      hasRooms: false,
       parametersOverride: ['hours'],
       sortOrder: 1,
       archivedAt: null,
@@ -87,6 +90,7 @@ export function createCatalogueServer(options: { canReset?: boolean } = {}) {
       name: 'Albums / Calendar / Photoframe',
       description: null,
       showOnClientForm: false,
+      hasRooms: false,
       parametersOverride: ['work'],
       sortOrder: 2,
       archivedAt: null,
@@ -97,6 +101,7 @@ export function createCatalogueServer(options: { canReset?: boolean } = {}) {
       name: 'Photo Booth',
       description: null,
       showOnClientForm: true,
+      hasRooms: false,
       parametersOverride: null,
       sortOrder: 3,
       archivedAt: ARCHIVED,
@@ -107,6 +112,7 @@ export function createCatalogueServer(options: { canReset?: boolean } = {}) {
       name: 'Stage Decor',
       description: null,
       showOnClientForm: true,
+      hasRooms: false,
       parametersOverride: null,
       sortOrder: 0,
       archivedAt: null,
@@ -156,6 +162,7 @@ export function createCatalogueServer(options: { canReset?: boolean } = {}) {
         );
       Object.assign(service, {
         ...('showOnClientForm' in body ? { showOnClientForm: body.showOnClientForm } : {}),
+        ...('hasRooms' in body ? { hasRooms: body.hasRooms } : {}),
         ...('name' in body ? { name: body.name } : {}),
         archivedAt: archive(body.archived, service.archivedAt),
       });

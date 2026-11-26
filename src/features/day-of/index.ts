@@ -6,3 +6,4 @@ export { applySavedSunlight } from './hooks/use-sunlight';
 export { forgetThisDevice } from './lib/device';
 export { canPersist, offlinePersistOptions } from './lib/offline-cache';
 export { overdueToday } from './lib/today';
+export { DayProgress } from './components/day-progress';
