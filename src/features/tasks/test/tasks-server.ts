@@ -30,9 +30,12 @@ export function createTasksBackend({ functions, lines, seed = [] }: Options) {
   let tasks: Task[] = structuredClone(seed);
   let nextId = 1;
   const bodies: unknown[] = [];
+  /** Offline sync (spec §14): each status change's device time and Idempotency-Key. */
+  const statusRequests: { changedAt: string; key: string | null }[] = [];
 
   const build = (
     id: string,
+    eventId: string,
     input: Omit<UpdateTaskInput, 'eventFunctionId'>,
     fnId: string | null,
     base?: Task,
@@ -42,6 +45,7 @@ export function createTasksBackend({ functions, lines, seed = [] }: Options) {
     const dueDate = fn?.date ?? input.dueDate ?? '2099-01-01';
     return {
       id,
+      eventId,
       eventFunctionId: fn?.id ?? null,
       functionName: fn?.name ?? null,
       serviceLineId: line?.id ?? null,
@@ -62,11 +66,13 @@ export function createTasksBackend({ functions, lines, seed = [] }: Options) {
 
   const handlers = [
     http.get(`${API}/events/:id/tasks`, () => HttpResponse.json({ data: tasks })),
-    http.post(`${API}/events/:id/tasks`, async ({ request }) => {
+    http.post(`${API}/events/:id/tasks`, async ({ request, params }) => {
       const body = (await request.json()) as CreateTaskInput;
       bodies.push(body);
       const slots = body.eventFunctionIds.length === 0 ? [null] : body.eventFunctionIds;
-      const created = slots.map((fnId) => build(`t-new-${nextId++}`, body, fnId));
+      const created = slots.map((fnId) =>
+        build(`t-new-${nextId++}`, String(params.id), body, fnId),
+      );
       tasks = [...tasks, ...created];
       return HttpResponse.json({ data: created }, { status: 201 });
     }),
@@ -75,13 +81,16 @@ export function createTasksBackend({ functions, lines, seed = [] }: Options) {
       bodies.push(body);
       const current = tasks.find((t) => t.id === params.taskId);
       if (!current) return notFound();
-      const next = build(current.id, body, body.eventFunctionId, current);
+      const next = build(current.id, current.eventId, body, body.eventFunctionId, current);
       tasks = tasks.map((t) => (t.id === current.id ? next : t));
       return HttpResponse.json({ data: next });
     }),
     http.patch(`${API}/events/:id/tasks/:taskId/status`, async ({ request, params }) => {
-      const change = (await request.json()) as StatusChange;
+      const { changedAt, ...change } = (await request.json()) as StatusChange & {
+        changedAt: string;
+      };
       bodies.push(change);
+      statusRequests.push({ changedAt, key: request.headers.get('Idempotency-Key') });
       const current = tasks.find((t) => t.id === params.taskId);
       if (!current) return notFound();
       const next: Task = {
@@ -103,6 +112,7 @@ export function createTasksBackend({ functions, lines, seed = [] }: Options) {
   return {
     handlers,
     bodies,
+    statusRequests,
     openCount: () => tasks.filter((t) => t.status !== 'done').length,
     /** Removing a line unlinks its tasks (decision 2026-11-26). */
     unlinkLine: (lineId: string) => {

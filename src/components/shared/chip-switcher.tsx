@@ -12,7 +12,7 @@ type ChipSwitcherProps = {
 };
 
 /**
- * Function switcher for S9 and the S10 cards (design system chips): outline at rest, gold border
+ * Function switcher for S9 and the S10 cards, and Today (S12) (design system chips): outline at rest, gold border
  * and gold-soft fill when chosen. One chip is always chosen; it scrolls sideways on a phone.
  */
 export function ChipSwitcher({ label, options, value, onChange, className }: ChipSwitcherProps) {

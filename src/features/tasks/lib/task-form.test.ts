@@ -12,6 +12,7 @@ import {
 
 const saved: Task = {
   id: 't1',
+  eventId: 'e1',
   eventFunctionId: 'sangeet',
   functionName: 'Sangeet',
   serviceLineId: 'l-dj',

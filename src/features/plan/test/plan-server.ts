@@ -229,6 +229,7 @@ const fn = (id: string, name: string, date: string, guestCount: number, sortOrde
 
 const seedTask = (id: string, extra: Partial<Task>): Task => ({
   id,
+  eventId: 'e1',
   eventFunctionId: null,
   functionName: null,
   serviceLineId: null,

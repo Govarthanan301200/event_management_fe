@@ -10,7 +10,7 @@ import { FunctionTasksPanel } from '@/features/tasks';
 import { usePlan } from '../../hooks/use-plan';
 import { useScrollToHash } from '../../hooks/use-scroll-to-hash';
 import { functionPlanView, pickFunction, todayIn } from '../../lib/by-function-view';
-import { ChipSwitcher } from '../chip-switcher';
+import { ChipSwitcher } from '@/components/shared/chip-switcher';
 import { ServiceDrawer } from '../drawer/service-drawer';
 import { NoFunctions } from '../no-functions';
 import { FunctionHeader } from './function-header';

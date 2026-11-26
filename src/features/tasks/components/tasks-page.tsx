@@ -107,7 +107,7 @@ export function TasksPage() {
           );
         }}
       />
-      <TaskDialogs eventId={event.id} open={dialogs.open} onClose={dialogs.close} />
+      <TaskDialogs open={dialogs.open} onClose={dialogs.close} />
     </div>
   );
 }

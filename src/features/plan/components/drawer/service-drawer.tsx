@@ -143,6 +143,7 @@ export function ServiceDrawer(props: ServiceDrawerProps) {
         {/* Outside the form: a portal still bubbles submit through the React tree. */}
         {addingTask && line ? (
           <TaskDialog
+            eventId={props.eventId}
             mode={{
               kind: 'add',
               preset: { functionIds: values.functionIds, serviceLineId: line.id },
