@@ -1,5 +1,6 @@
 import { RowMenu } from '@/components/shared/row-menu';
 import type { EventFunction } from '@/features/events';
+import type { LineRollup } from '@/features/summary';
 import type { ServiceLine } from '../api/plan.schema';
 import type { BandView } from '../lib/plan-view';
 import { EnvelopeSummary } from './envelope-summary';
@@ -8,6 +9,8 @@ import { LineRow } from './line-row';
 type CategoryBandProps = {
   band: BandView;
   functions: readonly EventFunction[];
+  /** Server attribution per line id (spec §12). */
+  rollups: ReadonlyMap<string, LineRollup>;
   onAdd: () => void;
   onEditEnvelope: () => void;
   onEditLine: (line: ServiceLine) => void;
@@ -18,6 +21,7 @@ type CategoryBandProps = {
 export function CategoryBand({
   band,
   functions,
+  rollups,
   onAdd,
   onEditEnvelope,
   onEditLine,
@@ -34,7 +38,7 @@ export function CategoryBand({
       className="overflow-hidden rounded-md border border-border"
     >
       <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 bg-muted px-4 py-2">
-        <h2 id={headingId} className="text-overline">
+        <h2 id={headingId} className="scroll-mt-14 text-overline">
           {category.name}
           {category.archivedAt ? (
             <span className="ml-2 text-muted-foreground normal-case">(archived)</span>
@@ -42,7 +46,7 @@ export function CategoryBand({
         </h2>
         <div className="flex items-center gap-2">
           {lines.length > 0 || band.envelope !== null ? (
-            <EnvelopeSummary envelope={band.envelope} planned={band.planned} />
+            <EnvelopeSummary envelope={band.envelope} planned={band.planned} left={band.left} />
           ) : null}
           <RowMenu
             label={`Actions for ${category.name}`}
@@ -79,6 +83,7 @@ export function CategoryBand({
               <LineRow
                 key={line.id}
                 line={line}
+                rollup={rollups.get(line.id)}
                 parameters={service?.effectiveParameters ?? category.parameters}
                 paxPrefill={
                   category.paxPrefill && (service?.effectiveParameters ?? []).includes('pax')

@@ -1,4 +1,5 @@
 import { http, HttpResponse } from 'msw';
+import { fakeSummary } from '@/features/summary/test/fake-summary';
 import type { EventFunction, EventStatus, FunctionInput } from '../api/events.schema';
 
 // An in-memory events backend for MSW (S5 + S6): reads reflect writes, like the real API.
@@ -139,7 +140,7 @@ export function createEventsServer() {
     formLocked: event.formLocked,
     requestedServices: [],
     functions: event.functions.map((row, index) => ({ ...row, sortOrder: index })),
-    plan: { services: 0, planned: 0 },
+    openTasks: 0,
   });
   const notFound = () =>
     HttpResponse.json(
@@ -180,6 +181,20 @@ export function createEventsServer() {
     http.get(`${API}/events/:id`, ({ params }) => {
       const event = find(params.id);
       return event ? HttpResponse.json({ data: detail(event) }) : notFound();
+    }),
+    http.get(`${API}/events/:id/summary`, ({ params }) => {
+      const event = find(params.id);
+      if (!event) return notFound();
+      const { functions } = detail(event);
+      return HttpResponse.json({
+        data: fakeSummary({
+          overallBudget: event.overallBudget,
+          functions,
+          categories: [],
+          lines: [],
+          envelopes: new Map(),
+        }),
+      });
     }),
     http.patch(`${API}/events/:id`, async ({ request, params }) => {
       const body = (await record(request)) as Partial<EventRecord>;

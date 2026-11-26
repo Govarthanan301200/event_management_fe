@@ -7,15 +7,22 @@ import {
   updateFunction,
 } from '../api/events.api';
 import type { EventDetail, FunctionInput } from '../api/events.schema';
+import { summaryKeys } from '@/features/summary';
 import { sortByIds } from '@/lib/order';
 
-/** Functions change the event's status and dates, so refresh the event and both S5 lists. */
+/**
+ * Functions change the event's status and dates, so refresh the event and both S5 lists. They are
+ * also the summary's columns, and a delete moves money (a line left with one function, or none).
+ */
 function useRefreshEvent(eventId: string) {
   const queryClient = useQueryClient();
   return () =>
     Promise.all([
       queryClient.invalidateQueries({ queryKey: eventsKeys.detail(eventId), exact: true }),
       queryClient.invalidateQueries({ queryKey: eventsKeys.lists() }),
+      queryClient.invalidateQueries({ queryKey: summaryKeys.event(eventId) }),
+      // A date change moves linked tasks; a delete unlinks them (spec §10).
+      queryClient.invalidateQueries({ queryKey: eventsKeys.tasks(eventId) }),
     ]);
 }
 
@@ -64,6 +71,11 @@ export function useReorderFunctions(eventId: string) {
     onError: (_error, _ids, context) => {
       if (context?.previous) queryClient.setQueryData(key, context.previous);
     },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: key, exact: true }),
+    // The summary's columns follow the function order.
+    onSettled: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: key, exact: true }),
+        queryClient.invalidateQueries({ queryKey: summaryKeys.event(eventId) }),
+      ]),
   });
 }

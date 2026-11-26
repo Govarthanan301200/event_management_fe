@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { eventsKeys } from '@/features/events';
+import { summaryKeys } from '@/features/summary';
 import {
   createLine,
   deleteLine,
@@ -14,7 +15,7 @@ export function usePlan(eventId: string) {
   return useQuery(planOptions(eventId));
 }
 
-/** A plan change also changes the event (status, S6 quick counts, Planned badges). */
+/** A plan change also changes the event (status, Planned badges) and every roll-up (spec §12). */
 function useRefresh(eventId: string) {
   const queryClient = useQueryClient();
   return () =>
@@ -22,6 +23,9 @@ function useRefresh(eventId: string) {
       queryClient.invalidateQueries({ queryKey: planKeys.event(eventId) }),
       queryClient.invalidateQueries({ queryKey: eventsKeys.detail(eventId), exact: true }),
       queryClient.invalidateQueries({ queryKey: eventsKeys.lists() }),
+      queryClient.invalidateQueries({ queryKey: summaryKeys.event(eventId) }),
+      // Tasks show the line's vendor; removing a line unlinks its tasks (decision 2026-11-26).
+      queryClient.invalidateQueries({ queryKey: eventsKeys.tasks(eventId) }),
     ]);
 }
 
@@ -49,6 +53,10 @@ export function useSetEnvelope(eventId: string) {
   return useMutation({
     mutationFn: ({ categoryId, amount }: { categoryId: string; amount: number | null }) =>
       setEnvelope(eventId, categoryId, amount),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: planKeys.event(eventId) }),
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: planKeys.event(eventId) }),
+        queryClient.invalidateQueries({ queryKey: summaryKeys.event(eventId) }),
+      ]),
   });
 }

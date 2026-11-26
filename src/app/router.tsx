@@ -3,7 +3,8 @@ import { RequireAuth, SignInPage } from '@/features/auth';
 import { CataloguePage, FunctionTypesPage } from '@/features/catalogue';
 import { ClientFormPage } from '@/features/client-form';
 import { EventOverviewPage, EventsPage, EventWorkspace } from '@/features/events';
-import { PlanPage } from '@/features/plan';
+import { ByFunctionPage, PlanPage, SummaryPage } from '@/features/plan';
+import { TasksPage } from '@/features/tasks';
 import {
   EditVendorPage,
   NewVendorPage,
@@ -27,12 +28,16 @@ export const routes = [
           { index: true, element: <Navigate to="/events" replace /> },
           { path: '/events', element: <EventsPage /> },
           {
-            // Spec §3 event workspace: Overview (S6) and Plan by category (S7) tabs.
+            // Spec §3 event workspace: Overview (S6), Plan by category (S7), By function (S9),
+            // Summary (S10) and Tasks (S11) tabs.
             path: '/events/:eventId',
             element: <EventWorkspace />,
             children: [
               { index: true, element: <EventOverviewPage /> },
               { path: 'plan', element: <PlanPage /> },
+              { path: 'by-function', element: <ByFunctionPage /> },
+              { path: 'summary', element: <SummaryPage /> },
+              { path: 'tasks', element: <TasksPage /> },
             ],
           },
           // Spec §9: S3 directory and S4 profile / edit.

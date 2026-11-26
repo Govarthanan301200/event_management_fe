@@ -79,8 +79,8 @@ export const eventDetailSchema = eventSummarySchema.extend({
     }),
   ),
   functions: z.array(eventFunctionSchema),
-  /** S6 quick counts: lines on the plan and their planned total (spec §12). */
-  plan: z.object({ services: z.number().int(), planned: z.number().int() }),
+  /** S6 quick count (spec §10): tasks still Pending or with an Issue. */
+  openTasks: z.number().int(),
 });
 export type EventDetail = z.infer<typeof eventDetailSchema>;
 
