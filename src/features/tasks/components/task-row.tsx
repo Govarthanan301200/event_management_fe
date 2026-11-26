@@ -12,10 +12,12 @@ type TaskRowProps = {
   showDate: boolean;
   overdue: boolean;
   actions: TaskActions;
+  /** Opened from the dashboard (`?task=`): a 2 s gold-soft glow. */
+  arrived?: boolean;
 };
 
 /** One task: Done toggle, title with its status words, when, the service and vendor, ⋯. */
-export function TaskRow({ task, showDate, overdue, actions }: TaskRowProps) {
+export function TaskRow({ task, showDate, overdue, actions, arrived = false }: TaskRowProps) {
   const done = task.status === 'done';
   const time = task.dueTime === null ? null : formatClock(task.dueTime);
   const when = showDate
@@ -54,7 +56,10 @@ export function TaskRow({ task, showDate, overdue, actions }: TaskRowProps) {
   ];
 
   return (
-    <li className="flex items-start gap-3 bg-card px-4 py-3">
+    <li
+      id={`task-${task.id}`}
+      className={cn('flex items-start gap-3 bg-card px-4 py-3', arrived && 'animate-arrive')}
+    >
       <button
         type="button"
         aria-label={done ? `Mark “${task.title}” not done` : `Mark “${task.title}” done`}

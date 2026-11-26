@@ -59,6 +59,20 @@ describe('S11 tasks (spec §13)', () => {
     );
   });
 
+  it('opened from the dashboard (?task=), scrolls to that task and marks it (decision 2026-11-26)', async () => {
+    const scroll = vi.spyOn(Element.prototype, 'scrollIntoView');
+    start('/events/e1/tasks?task=t-photo');
+    const row = (await screen.findByText('Photographer arrives')).closest('li');
+    expect(row).toHaveClass('animate-arrive');
+    await waitFor(() => {
+      expect(scroll.mock.contexts).toContain(row);
+    });
+    expect(screen.getByText('Confirm menu tasting').closest('li')).not.toHaveClass(
+      'animate-arrive',
+    );
+    scroll.mockRestore();
+  });
+
   it('adds a task on a typed date; a date after the last function goes to After the event', async () => {
     const user = userEvent.setup();
     const { backend } = start();

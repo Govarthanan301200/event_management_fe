@@ -252,6 +252,7 @@ export function createVendorsServer(options: { empty?: boolean } = {}) {
               name: service.name,
               description: null,
               showOnClientForm: true,
+              hasRooms: false,
               parametersOverride: null,
               effectiveParameters: ['hours'],
               sortOrder: serviceIndex,

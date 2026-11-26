@@ -43,6 +43,7 @@ const saved: ServiceLine = {
   serviceName: 'DJ / VDJ',
   categoryId: 'c-ent',
   serviceArchived: false,
+  serviceHasRooms: false,
   defaultVendorId: 'v1',
   defaultVendor: { name: 'Beat Republic', archived: false, offersService: true },
   perFunctionVendor: false,

@@ -1,4 +1,4 @@
-import { screen, within } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { setupServer } from 'msw/node';
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
@@ -97,8 +97,30 @@ describe('S2 service catalogue', () => {
         name: 'Same-Day Highlight Reel',
         description: '',
         showOnClientForm: true,
+        hasRooms: false,
         parametersOverride: ['hours'],
       },
+    });
+  });
+
+  it('turns on Rooms and guests for a service (decision 2026-11-27)', async () => {
+    const user = userEvent.setup();
+    const backend = start();
+    await user.click(await screen.findByRole('button', { name: 'Add service' }));
+    const dialog = await screen.findByRole('dialog', { name: 'Add service' });
+    await user.type(within(dialog).getByLabelText('Service name'), 'Homestay');
+    const rooms = within(dialog).getByRole('switch', { name: /Has rooms and guests/ });
+    expect(rooms).toHaveAccessibleDescription(
+      "This service's line in Plan opens the event's rooms and guests table.",
+    );
+    await user.click(rooms);
+    expect(rooms).toHaveAccessibleName('Has rooms and guests · On');
+    await user.click(within(dialog).getByRole('button', { name: 'Save service' }));
+    await waitFor(() => {
+      expect(backend.calls.at(-1)).toMatchObject({
+        method: 'POST',
+        body: { name: 'Homestay', hasRooms: true },
+      });
     });
   });
 

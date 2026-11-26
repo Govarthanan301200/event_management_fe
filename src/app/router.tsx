@@ -2,9 +2,11 @@ import { createBrowserRouter, Navigate } from 'react-router';
 import { RequireAuth, SignInPage } from '@/features/auth';
 import { CataloguePage, FunctionTypesPage } from '@/features/catalogue';
 import { ClientFormPage } from '@/features/client-form';
+import { DashboardPage } from '@/features/dashboard';
 import { TodayPage, UpcomingPage } from '@/features/day-of';
 import { EventOverviewPage, EventsPage, EventWorkspace } from '@/features/events';
 import { ByFunctionPage, PlanPage, SummaryPage } from '@/features/plan';
+import { RoomsPage } from '@/features/rooms';
 import { TasksPage } from '@/features/tasks';
 import {
   EditVendorPage,
@@ -28,18 +30,22 @@ export const routes = [
         element: <PlannerLayout />,
         children: [
           { index: true, element: <HomeRedirect /> },
+          // Spec §15 S13: home on the web; on phones it sits in the ⋯ menu (decision 2026-11-26).
+          { path: '/dashboard', element: <DashboardPage /> },
           // Spec §14 planner mobile app (S12 Today, Upcoming); responsive, every width.
           { path: '/today', element: <TodayPage /> },
           { path: '/upcoming', element: <UpcomingPage /> },
           { path: '/events', element: <EventsPage /> },
           {
-            // Spec §3 event workspace: Overview (S6), Plan by category (S7), By function (S9),
-            // Summary (S10) and Tasks (S11) tabs.
+            // Spec §3 event workspace: Overview (S6), Plan by category (S7, with S14 under it),
+            // By function (S9), Summary (S10) and Tasks (S11) tabs.
             path: '/events/:eventId',
             element: <EventWorkspace />,
             children: [
               { index: true, element: <EventOverviewPage /> },
               { path: 'plan', element: <PlanPage /> },
+              // Spec §3: Rooms and guests (S14) sits under Plan, opened from a line (decision 2026-11-27).
+              { path: 'plan/rooms', element: <RoomsPage /> },
               { path: 'by-function', element: <ByFunctionPage /> },
               { path: 'summary', element: <SummaryPage /> },
               { path: 'tasks', element: <TasksPage /> },

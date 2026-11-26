@@ -43,6 +43,8 @@ export const serviceLineSchema = z.object({
   serviceName: z.string(),
   categoryId: z.string(),
   serviceArchived: z.boolean(),
+  /** S7 shows Manage rooms and guests on this line (decision 2026-11-27). */
+  serviceHasRooms: z.boolean(),
   defaultVendorId: z.string().nullable(),
   defaultVendor: vendorRefSchema.nullable(),
   perFunctionVendor: z.boolean(),

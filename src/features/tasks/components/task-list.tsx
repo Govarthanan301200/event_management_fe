@@ -7,10 +7,11 @@ type TaskListProps = {
   sections: readonly TaskSection[];
   now: { date: string; time: string };
   actions: TaskActions;
+  arrivedId?: string | null;
 };
 
 /** S11 sections (spec §13 wireframe): a sunken overline band per group, then its tasks. */
-export function TaskList({ sections, now, actions }: TaskListProps) {
+export function TaskList({ sections, now, actions, arrivedId = null }: TaskListProps) {
   return (
     <div className="flex flex-col gap-4">
       {sections.map((section) => (
@@ -33,6 +34,7 @@ export function TaskList({ sections, now, actions }: TaskListProps) {
             showDate={section.kind !== 'day_of'}
             now={now}
             actions={actions}
+            arrivedId={arrivedId}
           />
         </section>
       ))}
@@ -45,9 +47,10 @@ type TaskRowsProps = {
   showDate: boolean;
   now: { date: string; time: string };
   actions: TaskActions;
+  arrivedId?: string | null;
 };
 
-export function TaskRows({ tasks, showDate, now, actions }: TaskRowsProps) {
+export function TaskRows({ tasks, showDate, now, actions, arrivedId = null }: TaskRowsProps) {
   return (
     <ul className="divide-y divide-border">
       {tasks.map((task) => (
@@ -57,6 +60,7 @@ export function TaskRows({ tasks, showDate, now, actions }: TaskRowsProps) {
           showDate={showDate}
           overdue={isOverdue(task, now)}
           actions={actions}
+          arrived={task.id === arrivedId}
         />
       ))}
     </ul>

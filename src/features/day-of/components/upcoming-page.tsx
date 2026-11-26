@@ -5,7 +5,7 @@ import type { Agenda, AgendaTask, AgendaVendor } from '../api/agenda.schema';
 import { useUpcomingAgenda } from '../hooks/use-agenda';
 import { useConnectivity } from '../hooks/use-connectivity';
 import { useNow } from '../hooks/use-now';
-import { useScrollToTask } from '../hooks/use-scroll-to-task';
+import { useScrollToTask } from '@/hooks/use-scroll-to-task';
 import { groupUpcoming } from '../lib/upcoming';
 import { AddTaskFab } from './add-task-fab';
 import { CallSheet } from './call-sheet';

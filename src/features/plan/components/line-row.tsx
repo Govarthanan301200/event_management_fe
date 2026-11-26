@@ -1,5 +1,7 @@
-import { ChevronRight } from 'lucide-react';
+import { BedDouble, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
+import { Link } from 'react-router';
+import { Button } from '@/components/ui/button';
 import { RowMenu } from '@/components/shared/row-menu';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import type { EventFunction } from '@/features/events';
@@ -84,6 +86,15 @@ export function LineRow({
               {meta}
             </span>
           </div>
+          {line.serviceHasRooms ? (
+            // Spec §10 entry point: a service with rooms (decision 2026-11-27) opens S14.
+            <Button asChild variant="outline" className="h-8 shrink-0 gap-1.5 px-2 sm:px-3">
+              <Link to="rooms">
+                <BedDouble className="size-4" strokeWidth={1.5} aria-hidden="true" />
+                <span className="max-sm:sr-only">Manage rooms and guests</span>
+              </Link>
+            </Button>
+          ) : null}
           <span className="shrink-0 text-right text-body tabular-nums">
             {hasBudget ? (
               formatINR(total)

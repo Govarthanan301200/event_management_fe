@@ -8,6 +8,7 @@ const drone: Service = {
   name: 'Drone Coverage',
   description: null,
   showOnClientForm: true,
+  hasRooms: false,
   parametersOverride: ['hours'],
   effectiveParameters: ['hours'],
   sortOrder: 0,
@@ -29,6 +30,7 @@ describe('serviceFormDefaults', () => {
     expect(serviceFormDefaults({ kind: 'add', category: photo })).toMatchObject({
       categoryId: 'c-photo',
       showOnClientForm: true,
+      hasRooms: false,
       parameterMode: 'inherit',
       override: [],
     });
